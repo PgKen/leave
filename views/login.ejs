@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Admin</title>
+</head>
+
+<body>
+    <div class="mainContainer">
+        <%- include('headerUser') %>
+        <section>
+            <%- //include('menu') %>
+            <article>
+                <div class="artTitle"><%=title%></div>
+                <div class="formLogin">
+                    <form action="/loginUser" method="POST">
+                        <ul>
+                            <li>
+                                <label for="userName">USER</label>
+                                <input type="text" name="username">
+                                <span></span>
+                            </li>
+                            <li>
+                                <label for="passWord">PASSWORD</label>
+                                <input type="password" name="password" id="password">
+                                <span id='visibility'>
+                                    <i class="material-icons" onclick="showPass()">
+                                        visibility
+                                    </i>
+                                </span>
+                            </li>
+                            <li>
+                                <button type="submit">Login</button>
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+            </article>
+        </section>
+        <%- include('footer') %>
+    </div>
+</body>
+
+<script>
+    //var win = window.open("about:blank", "_self");
+
+    function showPass() {
+        let txt = ''
+        var x = document.getElementById("password");
+        if (x.type === "password") {
+            x.type = "text";
+            txt = "<i class='material-icons' onclick='showPass()'>visibility_off</i>"
+            document.getElementById('visibility').innerHTML = txt
+        } else {
+            x.type = "password";
+            txt = "<i class='material-icons' onclick='showPass()'>visibility</i>"
+            document.getElementById('visibility').innerHTML = txt
+        }
+    }
+</script>
+
+</html>

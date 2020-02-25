@@ -1,0 +1,794 @@
+@import url("https://fonts.googleapis.com/css?family=Chonburi&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Chonburi|Prompt|Sarabun&display=swap");
+body {
+  padding: 0;
+  margin: 0; }
+  body .mainContainer {
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    width: 1200px;
+    margin: 0 auto; }
+    body .mainContainer header {
+      border: 1px solid green;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      background-color: #36387B;
+      color: #8385B6;
+      font-family: 'Chonburi', cursive; }
+    body .mainContainer section {
+      border: 1px solid #ccc;
+      display: flex;
+      flex-direction: row; }
+      body .mainContainer section nav {
+        flex: 1;
+        background-color: #FFF7AC;
+        display: flex;
+        margin: 5px;
+        font-family: 'Chonburi', cursive;
+        font-family: 'Prompt', sans-serif;
+        font-family: 'Sarabun', sans-serif; }
+        body .mainContainer section nav ul {
+          flex: 1;
+          padding: 0;
+          margin: 0;
+          list-style: none;
+          display: flex;
+          border: 1px solid #ccc;
+          flex-direction: column; }
+          body .mainContainer section nav ul li {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #CCC;
+            margin: 5px;
+            padding: 5px;
+            background-color: #5C5402;
+            color: #FFF7AC;
+            flex-direction: row;
+            cursor: pointer; }
+            body .mainContainer section nav ul li i {
+              flex: 1; }
+            body .mainContainer section nav ul li span {
+              flex: 4; }
+            body .mainContainer section nav ul li :hover {
+              color: white; }
+      body .mainContainer section article {
+        flex: 4;
+        margin: 5px;
+        border: 1px solid #ccc;
+        font-family: 'Chonburi', cursive;
+        font-family: 'Prompt', sans-serif;
+        font-family: 'Sarabun', sans-serif; }
+        body .mainContainer section article .artTitle {
+          display: flex;
+          justify-content: center;
+          font-size: 26px;
+          align-items: center;
+          padding: 5px;
+          /* margin: 0 0 0 0; */
+          background-color: #DAAB6F; }
+        body .mainContainer section article .formLogin {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          padding: 50px;
+          background-color: #CCC; }
+          body .mainContainer section article .formLogin form {
+            flex-basis: 500px; }
+            body .mainContainer section article .formLogin form ul {
+              list-style: none;
+              display: flex;
+              flex-direction: column;
+              padding: 20px;
+              margin: 0;
+              border: 3px solid #daab6f;
+              background-color: #FFF7AC;
+              box-shadow: 0px 4px 14px 0px black; }
+              body .mainContainer section article .formLogin form ul li {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 10px 0 0 0; }
+                body .mainContainer section article .formLogin form ul li label {
+                  flex: 1; }
+                body .mainContainer section article .formLogin form ul li input {
+                  flex: 2;
+                  font-size: 18px; }
+                body .mainContainer section article .formLogin form ul li span {
+                  flex: 0.5;
+                  display: flex;
+                  justify-content: center; }
+                  body .mainContainer section article .formLogin form ul li span i {
+                    color: #885819;
+                    cursor: pointer; }
+                    body .mainContainer section article .formLogin form ul li span i:hover {
+                      color: green; }
+                body .mainContainer section article .formLogin form ul li button {
+                  padding: 5px 10px;
+                  font-size: 18px;
+                  margin: 10px 0 0 0; }
+        body .mainContainer section article ul.btnSubmit {
+          border: 1px solid #ccc;
+          display: flex;
+          padding: 20px;
+          margin: 0px;
+          list-style: none;
+          justify-content: center; }
+          body .mainContainer section article ul.btnSubmit li button {
+            font-size: 20px;
+            margin: 0 5px;
+            padding: 5px 20px; }
+        body .mainContainer section article ul.formInput {
+          display: flex;
+          flex-direction: column;
+          padding: 0;
+          margin: 15px 0 0 0;
+          list-style: none;
+          border: 1px solid #1D1F5F;
+          background-color: #8385B6; }
+          body .mainContainer section article ul.formInput li {
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            margin: 5px;
+            padding: 5px;
+            justify-content: flex-start;
+            flex-direction: row;
+            align-items: center; }
+            body .mainContainer section article ul.formInput li label {
+              font-size: 18px;
+              flex: 1; }
+            body .mainContainer section article ul.formInput li input[type="text"] {
+              flex: 2;
+              border: 1px solid #CCC;
+              font-size: 18px;
+              padding: 5px;
+              color: blue; }
+            body .mainContainer section article ul.formInput li input[type="text"]#valNameSelect {
+              background-color: #4a4b76;
+              color: yellow; }
+            body .mainContainer section article ul.formInput li input[type="text"].valNameSelect {
+              background-color: #4a4b76;
+              color: yellow; }
+            body .mainContainer section article ul.formInput li select {
+              flex: 1;
+              padding: 4px;
+              margin: 4px;
+              font-size: 16px;
+              color: blue; }
+            body .mainContainer section article ul.formInput li span {
+              flex: 0.5; }
+        body .mainContainer section article ul.boxDetailOrder {
+          border: 1px solid green;
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          padding: 10px; }
+          body .mainContainer section article ul.boxDetailOrder li {
+            border-bottom: 1px solid #CCC;
+            margin: 10px 0;
+            display: flex; }
+            body .mainContainer section article ul.boxDetailOrder li label {
+              flex: 1; }
+            body .mainContainer section article ul.boxDetailOrder li span {
+              flex: 1; }
+            body .mainContainer section article ul.boxDetailOrder li span:nth-child(3) {
+              flex: 0.3;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: red; }
+        body .mainContainer section article .altSubmit {
+          display: none;
+          position: absolute;
+          border: 1px solid;
+          width: 400px;
+          justify-content: center;
+          padding: 50px;
+          font-size: 40px;
+          margin: 350px 0 0px 100px;
+          color: white;
+          background-color: #4CAF50; }
+        body .mainContainer section article .showAltSubmit {
+          display: flex; }
+    body .mainContainer footer {
+      display: flex;
+      justify-content: center;
+      background-color: #FFDBAC;
+      color: #885819;
+      margin: 10px;
+      border-bottom: 3px solid #885819;
+      border-top: 3px solid #885819; }
+  body .boxShadow {
+    width: 100%;
+    border: 1px solid;
+    position: fixed;
+    height: 100%;
+    background-color: #009688a3; }
+  body .boxleave {
+    display: flex;
+    background-color: #b3e5b5;
+    flex-direction: column;
+    margin: 20px;
+    padding: 10px;
+    border: 2px solid #8a8a8a;
+    box-shadow: 4px 6px 14px #5f6161;
+    font-family: 'Chonburi', cursive;
+    font-family: 'Prompt', sans-serif;
+    font-family: 'Sarabun', sans-serif; }
+    body .boxleave ul {
+      list-style: none;
+      display: flex; }
+    body .boxleave ul.headComp {
+      flex-direction: row;
+      padding: 0;
+      margin: 0; }
+      body .boxleave ul.headComp li:nth-child(1) {
+        flex: 1; }
+      body .boxleave ul.headComp li {
+        flex: 6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px; }
+        body .boxleave ul.headComp li img {
+          width: 80px; }
+    body .boxleave ul.headTitle {
+      flex-direction: row;
+      padding: 0;
+      margin: 0;
+      justify-content: center;
+      font-size: 20px; }
+    body .boxleave ul.leavename {
+      padding: 0;
+      margin: 0;
+      justify-content: center; }
+      body .boxleave ul.leavename li {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+        align-items: center;
+        margin: 5px; }
+        body .boxleave ul.leavename li label {
+          flex: 1;
+          text-align: left; }
+        body .boxleave ul.leavename li span {
+          flex: 1;
+          border-bottom: 1px dotted black;
+          color: blue; }
+    body .boxleave ul.tbl {
+      border: 1px solid black;
+      justify-content: center;
+      padding: 0;
+      margin: 25px 0 0 0;
+      align-items: center;
+      font-size: 14px; }
+      body .boxleave ul.tbl li.tbl1 {
+        display: flex;
+        flex-direction: column;
+        flex: 1; }
+        body .boxleave ul.tbl li.tbl1 ul {
+          border-right: 1px solid black;
+          flex: 1;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center; }
+          body .boxleave ul.tbl li.tbl1 ul li {
+            flex: 1;
+            text-align: center; }
+      body .boxleave ul.tbl li.tbl3 {
+        flex: 1;
+        display: flex;
+        flex-direction: column; }
+        body .boxleave ul.tbl li.tbl3 ul {
+          display: flex;
+          justify-content: center;
+          flex-direction: row;
+          flex: 1;
+          padding: 0;
+          margin: 0; }
+          body .boxleave ul.tbl li.tbl3 ul li {
+            flex: 1;
+            text-align: center;
+            border-bottom: 1px solid black;
+            border-right: 1px solid black; }
+        body .boxleave ul.tbl li.tbl3 ul:nth-child(1) li {
+          font-weight: bold; }
+        body .boxleave ul.tbl li.tbl3 ul:last-child li {
+          border-bottom: 0px solid black; }
+    body .boxleave ul.tblData {
+      border-bottom: 1px solid black;
+      border-left: 1px solid black;
+      display: flex;
+      flex-direction: row;
+      padding: 0;
+      margin: 0; }
+      body .boxleave ul.tblData li {
+        border-right: 1px solid black;
+        flex: 1;
+        text-align: center;
+        font-size: 14px; }
+      body .boxleave ul.tblData li.lavType {
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        justify-content: center; }
+        body .boxleave ul.tblData li.lavType span {
+          flex: 1;
+          text-align: center;
+          border-right: 1px solid black;
+          display: flex;
+          align-items: center;
+          justify-content: center; }
+          body .boxleave ul.tblData li.lavType span i {
+            font-size: 14px;
+            color: red;
+            cursor: pointer;
+            flex: 1; }
+      body .boxleave ul.tblData li.lavData {
+        display: flex;
+        flex-direction: row;
+        flex: 2.5;
+        justify-content: center; }
+        body .boxleave ul.tblData li.lavData span {
+          flex: 1;
+          text-align: center;
+          border-right: 1px solid black; }
+      body .boxleave ul.tblData:hover {
+        background-color: #2c302c;
+        color: white; }
+  body .boxBtnLeave {
+    display: flex;
+    font-display: row;
+    font-family: 'Chonburi', cursive;
+    font-family: 'Prompt', sans-serif;
+    font-family: 'Sarabun', sans-serif; }
+    body .boxBtnLeave ul {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      justify-content: flex-start; }
+      body .boxBtnLeave ul li {
+        border: 2px solid #4a05c4;
+        flex-basis: 200px;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        margin: 5px 20px;
+        background-color: #673AB7;
+        color: white;
+        box-shadow: 2px 4px 8px black;
+        letter-spacing: 3px;
+        font-size: 20px; }
+  body .boxTopMenu {
+    display: flex;
+    font-display: row;
+    font-family: 'Chonburi', cursive;
+    font-family: 'Prompt', sans-serif;
+    font-family: 'Sarabun', sans-serif; }
+    body .boxTopMenu ul {
+      flex: 1;
+      display: flex;
+      border: 1px solid #CCC;
+      flex-direction: row;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      justify-content: flex-start;
+      background-color: #673ab7; }
+      body .boxTopMenu ul li {
+        flex-basis: 250px;
+        display: flex;
+        justify-content: center;
+        margin: 5px 0 5px 0;
+        color: white;
+        font-size: 20px;
+        border-right: 2px solid white;
+        cursor: pointer; }
+        body .boxTopMenu ul li:hover {
+          color: #FFEB3B;
+          background-color: #FF5722; }
+        body .boxTopMenu ul li i {
+          flex: 1;
+          justify-content: flex-end;
+          display: flex;
+          align-items: center;
+          color: #FFEB3B; }
+        body .boxTopMenu ul li span {
+          flex: 2;
+          text-align: left;
+          text-indent: 10px; }
+  body .boxListUnderUser {
+    border: 1px solid #CCC;
+    margin: 10px 0 0 0;
+    display: flex;
+    flex-direction: row;
+    font-family: 'Chonburi', cursive;
+    font-family: 'Prompt', sans-serif;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 20px;
+    flex-direction: row; }
+    body .boxListUnderUser ul {
+      border: 1px solid #CCC;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 10px;
+      list-style: none; }
+      body .boxListUnderUser ul li {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+        padding: 4px; }
+        body .boxListUnderUser ul li span {
+          flex: 1;
+          border-bottom: 1px solid #CCC;
+          border-left: 1px solid #CCC;
+          display: flex;
+          justify-content: center; }
+          body .boxListUnderUser ul li span i {
+            color: #0c8011;
+            font-size: 26px;
+            text-shadow: 3px 2px 4px #5a9515;
+            cursor: pointer; }
+        body .boxListUnderUser ul li label {
+          flex: 1;
+          font-size: 22px;
+          display: flex;
+          justify-content: center; }
+      body .boxListUnderUser ul li:nth-child(odd) {
+        background-color: #eceae6; }
+    body .boxListUnderUser ul.listUserLeave li {
+      flex: 0;
+      display: flex;
+      justify-content: center; }
+      body .boxListUnderUser ul.listUserLeave li i {
+        color: #FF5722; }
+      body .boxListUnderUser ul.listUserLeave li button {
+        padding: 2px 15px;
+        font-family: 'Chonburi', cursive;
+        font-family: 'Prompt', sans-serif;
+        font-family: 'Sarabun', sans-serif;
+        font-size: 18px;
+        color: #ffffff;
+        background-color: #FF5722; }
+    body .boxListUnderUser ul.listUserLeave li.noDataLeave {
+      margin: 12px;
+      background-color: greenyellow;
+      color: #046e64; }
+  body .boxInSick,
+  body .boxInLeave {
+    display: none;
+    border: 6px solid #FF5722;
+    position: fixed;
+    width: 800px;
+    margin: 30px 200px;
+    background-color: #673ab7;
+    box-shadow: 6px 8px 8px black;
+    font-family: 'Chonburi', cursive;
+    font-family: 'Prompt', sans-serif;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 20px;
+    flex-direction: row; }
+    body .boxInSick ul,
+    body .boxInLeave ul {
+      flex: 1;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column; }
+      body .boxInSick ul li,
+      body .boxInLeave ul li {
+        flex: 1;
+        border: 1px solid #CCC;
+        display: flex;
+        flex-direction: row;
+        margin: 5px;
+        padding: 5px;
+        color: white;
+        font-size: 22px; }
+        body .boxInSick ul li i,
+        body .boxInLeave ul li i {
+          flex: 1;
+          border: 1px solid; }
+        body .boxInSick ul li span,
+        body .boxInLeave ul li span {
+          flex: 2;
+          border: 1px solid; }
+        body .boxInSick ul li label,
+        body .boxInLeave ul li label {
+          flex: 1;
+          color: white;
+          font-size: 22px;
+          display: flex;
+          justify-content: flex-end;
+          padding: 5px; }
+        body .boxInSick ul li input[type="date"],
+        body .boxInLeave ul li input[type="date"] {
+          flex: 2;
+          border: 1px solid red; }
+  body .boxInpLeave {
+    display: flex;
+    justify-content: center;
+    font-family: 'Chonburi', cursive;
+    font-family: 'Prompt', sans-serif;
+    font-family: 'Sarabun', sans-serif; }
+    body .boxInpLeave ul {
+      flex-basis: 750px;
+      margin: 15px;
+      padding: 25px;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid blueviolet;
+      background-color: #26065f;
+      color: wheat; }
+      body .boxInpLeave ul li.boxInpTitle {
+        justify-content: center;
+        color: #ffffff;
+        display: flex;
+        /* border: 1px solid; */
+        background-color: #7121ff;
+        font-size: 28px;
+        margin: 0px auto;
+        padding: 9px; }
+      body .boxInpLeave ul li {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin: 20px; }
+        body .boxInpLeave ul li ul.imgSick {
+          flex: 2;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: space-around; }
+          body .boxInpLeave ul li ul.imgSick li {
+            flex-basis: 30%;
+            margin: 6px 0 6px 0px;
+            background-color: black;
+            color: white;
+            cursor: pointer; }
+            body .boxInpLeave ul li ul.imgSick li:hover {
+              background-color: white;
+              color: darkblue; }
+            body .boxInpLeave ul li ul.imgSick li img {
+              width: 100%; }
+              body .boxInpLeave ul li ul.imgSick li img:hover {
+                opacity: 0.4; }
+        body .boxInpLeave ul li label {
+          font-size: 22px;
+          flex: 1;
+          display: flex; }
+        body .boxInpLeave ul li input[type="date"] {
+          flex: 2;
+          font-size: 22px;
+          font-family: 'Chonburi', cursive;
+          font-family: 'Prompt', sans-serif;
+          font-family: 'Sarabun', sans-serif; }
+        body .boxInpLeave ul li input[type="text"] {
+          flex: 2;
+          font-size: 22px;
+          font-family: 'Chonburi', cursive;
+          font-family: 'Prompt', sans-serif;
+          font-family: 'Sarabun', sans-serif; }
+        body .boxInpLeave ul li input[type="password"] {
+          flex: 2;
+          font-size: 22px;
+          font-family: 'Chonburi', cursive;
+          font-family: 'Prompt', sans-serif;
+          font-family: 'Sarabun', sans-serif; }
+        body .boxInpLeave ul li select {
+          flex: 2;
+          font-size: 22px;
+          font-family: 'Chonburi', cursive;
+          font-family: 'Prompt', sans-serif;
+          font-family: 'Sarabun', sans-serif; }
+        body .boxInpLeave ul li button {
+          font-size: 22px;
+          padding: 5px 25px;
+          font-family: 'Chonburi', cursive;
+          font-family: 'Prompt', sans-serif;
+          font-family: 'Sarabun', sans-serif; }
+  body .boxInput {
+    position: fixed;
+    display: none;
+    z-index: 1;
+    margin: 20px 400px;
+    justify-content: center;
+    height: 750px;
+    width: 750px;
+    overflow: hidden;
+    background-color: blue;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%; }
+    body .boxInput ul.boxInputLeave {
+      display: none;
+      border: 1px solid goldenrod;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 2250px;
+      height: 750px;
+      padding: 0;
+      background-color: white;
+      transition: all 1s linear;
+      -webkit-transition: all 1s linear;
+      -moz-transition: all 1s linear;
+      -ms-transition: all 1s linear;
+      -o-transition: all 1s linear; }
+      body .boxInput ul.boxInputLeave li {
+        display: flex;
+        width: 100%;
+        margin: 35px;
+        justify-content: center;
+        flex-direction: row; }
+        body .boxInput ul.boxInputLeave li i.labelTitle {
+          flex: 1;
+          font-size: 40px;
+          display: flex;
+          justify-content: center;
+          align-items: center; }
+        body .boxInput ul.boxInputLeave li i {
+          flex: 1;
+          text-align: center;
+          font-size: 70px; }
+        body .boxInput ul.boxInputLeave li i.pre {
+          color: gray;
+          transform: rotate(180deg);
+          -webkit-transform: rotate(180deg);
+          -moz-transform: rotate(180deg);
+          -ms-transform: rotate(180deg);
+          -o-transform: rotate(180deg); }
+        body .boxInput ul.boxInputLeave li span {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center; }
+          body .boxInput ul.boxInputLeave li span input[type="date"] {
+            font-size: 26px;
+            padding: 5px;
+            text-align: center;
+            background-color: goldenrod;
+            width: 60%; }
+          body .boxInput ul.boxInputLeave li span em {
+            font-size: 24px;
+            color: red; }
+          body .boxInput ul.boxInputLeave li span select {
+            font-size: 30px;
+            width: 15%;
+            text-align: center;
+            padding: 5px;
+            border: 6px solid #009688; }
+          body .boxInput ul.boxInputLeave li span .dimg {
+            flex: 1;
+            border: 1px solid red;
+            display: flex;
+            flex-direction: row;
+            justify-content: center; }
+            body .boxInput ul.boxInputLeave li span .dimg img {
+              width: 20%; }
+        body .boxInput ul.boxInputLeave li span.spanTitle {
+          flex: 1;
+          font-size: 26px;
+          border: 1px solid red;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #673ab7;
+          color: white;
+          font-family: 'Chonburi', cursive;
+          font-family: 'Prompt', sans-serif;
+          font-family: 'Sarabun', sans-serif; }
+    body .boxInput ul.boxBtnNext {
+      background-color: #CCC;
+      padding: 0;
+      margin: 0;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      align-items: center; }
+      body .boxInput ul.boxBtnNext li {
+        font-size: 36px; }
+    body .boxInput .step0 {
+      margin: 0px 0 0 0px; }
+    body .boxInput .step1 {
+      margin: 0px 0 0 -750px; }
+    body .boxInput .step2 {
+      margin: 0px 0 0 -1500px; }
+  body .boxCeoData {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    font-family: 'Chonburi', cursive;
+    font-family: 'Prompt', sans-serif;
+    font-family: 'Sarabun', sans-serif; }
+    body .boxCeoData ul {
+      border: 1px solid #CCC;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      flex: 2;
+      display: flex;
+      flex-direction: column; }
+      body .boxCeoData ul li {
+        display: flex;
+        flex-direction: row;
+        margin: 0 10px 0 10px;
+        border-bottom: 1px solid #CCC; }
+        body .boxCeoData ul li span:nth-child(2) {
+          justify-content: flex-start; }
+        body .boxCeoData ul li span {
+          flex: 1;
+          border-left: 1px solid #CCC;
+          display: flex;
+          justify-content: center; }
+        body .boxCeoData ul li:hover {
+          background-color: #FF9800; }
+        body .boxCeoData ul li i {
+          cursor: pointer; }
+      body .boxCeoData ul li:nth-child(even) {
+        background-color: #e7e7e7; }
+        body .boxCeoData ul li:nth-child(even):hover {
+          background-color: #FF9800; }
+      body .boxCeoData ul li:nth-child(1) {
+        background-color: #076407;
+        font-size: 20px;
+        margin: 0px;
+        color: white; }
+        body .boxCeoData ul li:nth-child(1) span {
+          display: flex;
+          justify-content: center; }
+      body .boxCeoData ul li.headDp {
+        margin: 0 0 0 0px;
+        color: #cfeab0;
+        background-color: #464f4e;
+        font-size: 18px; }
+        body .boxCeoData ul li.headDp:hover {
+          background-color: #464f4e; }
+      body .boxCeoData ul li.headMenu {
+        margin: 2px 0 2px 0px;
+        padding: 2px 0 2px 0px;
+        background-color: #076407;
+        font-size: 18px; }
+      body .boxCeoData ul li.headName {
+        background-color: red;
+        color: antiquewhite;
+        height: 2px; }
+      body .boxCeoData ul li.btnClass {
+        margin-top: 12px;
+        border: 0px solid; }
+        body .boxCeoData ul li.btnClass span {
+          border: 0px solid;
+          font-size: 36px;
+          color: deepskyblue; }
+          body .boxCeoData ul li.btnClass span button {
+            font-size: 18px;
+            font-family: 'Chonburi', cursive;
+            font-family: 'Prompt', sans-serif;
+            font-family: 'Sarabun', sans-serif; }
+        body .boxCeoData ul li.btnClass:hover {
+          background-color: white; }
+    body .boxCeoData ul.frist {
+      flex: 0.7;
+      border: 1px solid #CCC; }
+      body .boxCeoData ul.frist li:nth-child(1) {
+        font-size: 14px; }
+
+/*# sourceMappingURL=style.css.map */

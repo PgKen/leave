@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/javascripts/script.js"></script>
+    <title>Admin</title>
+</head>
+
+
+<body>
+    <div class="boxTopMenu">
+        <ul>
+            <li>
+                <i class="material-icons">
+                    local_hospital
+                </i>
+                <span onclick="fnSick()">
+                    ลาป่วย
+                </span>
+            </li>
+            <li>
+                <i class="material-icons">
+                    transfer_within_a_station
+                </i>
+                <span onclick="fnLeave()">
+                    ลากิจ
+                </span>
+            </li>
+            <li style="border: none;"></li>
+            <li></li>
+            <li>&nbsp;</li>
+            <li>&nbsp;</li>
+            <li onclick="logout()">
+                <i class="material-icons">
+                    exit_to_app
+                </i>
+                <span>
+                    ออกจากระบบ
+                </span>
+            </li>
+        </ul>
+    </div>
+    <div class="boxInSick">
+        <ul>
+            <li>
+                <i class="material-icons">
+                    local_hotel
+                </i>
+                <span>
+                    แบบฟอร์ม ลาป่วย
+                </span>
+            </li>
+            <li>
+                <label for="date">วันที่เริ่มลา</label>
+                <input type="date" name="" id="">
+            </li>
+            <li>3</li>
+            <li>3</li>
+            <li>3</li>
+            <li>3</li>
+            <li>3</li>
+            <li>3</li>
+        </ul>
+    </div>
+
+
+
+    <% dataUser = dataUser[0] %>
+    <% dataOrder1 = dataOrder1[0] %>
+    <% dataOrder2 = dataOrder2[0] %>
+    <% //dataListLeave[4].totalSick %>
+    <% //dataListLeave = dataListLeave[0] %>
+    <!-- <div class="boxShadow"></!-->
+    <div class="boxInpLeave" id="boxInpLeave">
+        <ul>
+            <form name="formAddLeave" action="/addLeave" method="post" onsubmit="return validateForm()">
+                <li class="boxInpTitle">ลาป่วย</li>
+                <li>
+                    <label for="date">วันที่เริ่มลา</label>
+                    <input type="date" name="dateStart">
+                </li>
+                <li>
+                    <label for="date">จำนวนวันที่ลา</label>
+                    <select name="dateUnit" id="">
+                        <option value="">โปรดเลือกจำนวนวันลา</option>
+                        <% for(let la =0.5; la < 7; la+=0.5){ %>
+                        <option value="<%=la%>"><%=la%>&nbsp;วัน</option>
+                        <% } %>
+                    </select>
+                </li>
+                <li>
+                    <label for="date">เหตุผลการลา</label>
+                    <ul class="imgSick" id="imgSick">
+                    </ul>
+                </li>
+                <li>
+                    <label for="">&nbsp;</label>
+                    <input type="text" name="valNameType" id="valNameType" disabled>
+                    <input type="hidden" name="valComment" id="valComment">
+                    <input type="hidden" name="valType" id="valIdType">
+                </li>
+                <li>
+                    <button type="submit" name="submit">บันทึก</button>
+                </li>
+            </form>
+        </ul>
+    </div>
+    <!-- inpust ลากิจ -->
+    <div class="boxInpLeave" id="boxInpLeave2">
+
+        <ul>
+            <form name="formAddLeave2" action="/addLeave2" method="post" onsubmit="return validateForm2()">
+                <li class="boxInpTitle">ลากิจ</li>
+                <li>
+                    <label for="date">วันที่เริ่มลา</label>
+                    <input type="date" name="dateStart2">
+                </li>
+                <li>
+                    <label for="date">จำนวนวันที่ลา</label>
+                    <select name="dateUnit2" id="">
+                        <option value="">โปรดเลือกจำนวนวันลา</option>
+                        <% for(let la =0.5; la < 7; la+=0.5){ %>
+                        <option value="<%=la%>"><%=la%>&nbsp;วัน</option>
+                        <% } %>
+                    </select>
+                </li>
+                <li>
+                    <label for="">เหตุผลการลา</label>
+                    <input type="text" name="valComment2" id="valComment2">
+                    <!-- <input type="hidden" name="valComment2" id="valComment2"> -->
+                </li>
+                <li>
+                    <label style="flex:2;">ผู้ปฏิบัติงานแทน</label>
+                    <input type="text" name="wokerId" style="font-size: 16px; flex:1;" placeholder="รหัสพนักงาน">
+                    <input type="password" name="wokerPass" style="font-size: 16px; flex:0.5;" placeholder="รหัสผ่าน">
+                    <button style="font-size: 12px; padding:6px 8px; flex:0.5;" type="button"
+                        onclick="chkWorker()">ยินยอม</button>
+                </li>
+                <li>
+                    <label style="flex:1;">ชื่อปฏิบัติงานแทน</label>
+                    <label style="flex:2;" id="workerName">***</label>
+                    <input type="hidden" name="workerUserId" id="workerUserId">
+                </li>
+                <li>
+                    <button type="submit">บันทึก</button>
+                </li>
+            </form>
+        </ul>
+    </div>
+    <!-- End ใช้งาน -->
+    <div class="boxleave">
+        <ul class="headComp">
+            <li>
+                <img src="/images/logo_srimaung.png" alt="">
+            </li>
+            <li>
+                บริษัท แอ็กโกรคอมเมอร์สกรุ๊ป จำกัด
+            </li>
+        </ul>
+        <ul class="headTitle">
+            <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+            <li>ใบลา</li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name">ชื่อ</label>
+                <span style="flex: 2;"><%=dataUser.fistname%></span>
+                <label for="name">ชื่อเล่น</label>
+                <span>&nbsp;</span>
+                <label for="name">รหัสพนักงาน</label>
+                <span><%=dataUser.username%></span>
+                <label style="flex: 2; font-size:24px; text-align:right;" for="name">&nbsp;</label>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name">ตำแหน่ง</label>
+                <span><%=dataUser.idUser%></span>
+                <label for="name">แผนก/ฝ่าย</label>
+                <span><%=dataUser.namedp%></span>
+                <label for="name"></label>
+                <span></span>
+                <label style="flex: 2; font-size:24px" for="name"></label>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name">ในระหว่างการลาสามารถติดต่อข้าเจ้าได้ที่</label>
+                <span style="flex: 1;">
+                    <%=dataUser.address %>
+                </span>
+                <label for="name" style="text-align: left;">ขั้นตอนการลา</label>
+                <span></span>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name">เบอร์โทรฉุกเฉิน</label>
+                <span><%=dataUser.tel %></span>
+                <label style="flex:2;" for="name">ลากิจ : ให้ลาล่วงหน้าก่อน 3 วัน
+                    และต้องได้รับอนุมัติก่อนหยุดงาน</label>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name" style="flex: 0.5;">ผู้บังคับบัญชา</label>
+                <label for="name" style="flex: 0.5;">ผู้บังคับบัญชา (อนุมัติ 1)</label>
+                <span><%=dataOrder1.name%></span>
+
+                <label style="flex:2;" for="name">ลาป่วย : ให้ลงบันทึกในวันแรกที่กลับมาทำงาน การลาติดต่อกัน 3
+                    วันให้แนบใบรับรองแพทย์</label>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name" style="flex: 0.5;"></label>
+                <label for="name" style="flex: 0.5;">ผู้บังคับบัญชา (อนุมัติ 2)</label>
+                <span><%=dataOrder2.name%></span>
+                <label style="flex:2;" for="name"></label>
+            </li>
+        </ul>
+        <ul class="tbl">
+            <li class="tbl1" style="flex:0.3;">
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>ลำดับ</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="tbl1" style="flex:0.5;">
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>วันเดือนปี</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="tbl3">
+                <ul>
+                    <li>ประเภทการลา</li>
+                </ul>
+                <ul>
+                    <li>ลาป่วย</li>
+                    <li>ลากิจ</li>
+                    <li>ขาดงาน</li>
+                </ul>
+                <ul>
+                    <li>(30 วัน)</li>
+                    <li>(6 วัน)</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="tbl3">
+                <ul>
+                    <li>วัน/เดือน/ปี</li>
+                </ul>
+                <ul>
+                    <li>เริ่มต้น</li>
+                    <li>สิ้นสุด</li>
+                </ul>
+                <ul>
+                    <li>วันลา</li>
+                    <li>วันลา</li>
+                </ul>
+            </li>
+            <li class="tbl1" style="flex:0.8;">
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>เหตุผลการลา</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="tbl3" style="flex: 2.5;">
+                <ul>
+                    <li>ข้อมูลการลา</li>
+                </ul>
+                <ul>
+                    <li>ลาป่วย</li>
+                    <li>ลากิจ</li>
+                    <li>ขาดงาน</li>
+                    <li>รวม</li>
+                    <li>รวม</li>
+                    <li>รวม</li>
+                </ul>
+                <ul>
+                    <li>มาแล้ว</li>
+                    <li>มาแล้ว</li>
+                    <li>มาแล้ว</li>
+                    <li>ลาป่วย</li>
+                    <li>ลากิจ</li>
+                    <li>ขาดงาน</li>
+                </ul>
+            </li>
+            <li class="tbl3">
+                <ul>
+                    <li>ลายเซ็น</li>
+                </ul>
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>&nbsp;</li>
+                </ul>
+                <ul>
+                    <li>ผู้ขอลา</li>
+                    <li>ผู้อนุมัติ</li>
+                </ul>
+            </li>
+            <li class="tbl3">
+                <ul>
+                    <li>ลายเซ็น</li>
+                </ul>
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>&nbsp;</li>
+                </ul>
+                <ul>
+                    <li>ผู้อนุมัติ</li>
+                    <li>ผู้บริหาร</li>
+                </ul>
+            </li>
+            <li class="tbl1" style="flex:0.8;">
+                <ul style="border:0px solid;">
+                    <li>ผู้ปฏิบัติงานแทน</li>
+                </ul>
+            </li>
+
+        </ul>
+        <% let beforI = 0 %>
+        <% for(let i = 0; i < dataListLeave.length; i++){ %>
+        <ul class="tblData">
+            <li style="flex:0.3;"><%//=(i+1)%>id:<%=dataListLeave[i].leaveId%></li>
+            <li style="flex:0.5;"><%=dataListLeave[i].dateCreate%></li>
+            <li class="lavType">
+                <span><%=dataListLeave[i].unitDate%></span>
+                <span><%=dataListLeave[i].unitDate2%></span>
+                <span style="border: 0px solid;"><%=dataListLeave[i].unitDate3%></span>
+            </li>
+            <li class="lavType">
+                <span><%=dataListLeave[i].dateStart%></span>
+                <span style="border: 0px solid;"><%=dataListLeave[i].dateEnd%></span>
+            </li>
+            <li style="flex:0.8;"><%=dataListLeave[i].cause%></li>
+            <li class="lavData">
+
+                <% beforI = i-1 %>
+                <% if(beforI < 0) { %>
+                <span>0</span>
+                <span>0</span>
+                <span>0</span>
+                <% }else{ %>
+                <span><%=dataListLeave[beforI].totalSick%></span>
+                <span><%=dataListLeave[beforI].totalLeave%></span>
+                <span><%=dataListLeave[beforI].totalCut%></span>
+                <% } %>
+
+
+                <span><%=dataListLeave[i].totalSick%></span>
+                <span><%=dataListLeave[i].totalLeave%></span>
+                <span style="border: 0px solid;"><%=dataListLeave[i].totalCut%></span>
+            </li>
+            <li class="lavType">
+                <% if(dataListLeave[i].status == 0){ %>
+                <span>
+                    <i class="material-icons" onclick="deleteLeave(<%=dataListLeave[i].leaveId%>,<%=dataUser.idUser%>)">
+                        clear
+                    </i>
+                </span>
+                <% }else{ %>
+                <span><%=dataUser.nickname%></span>
+                <% } %>
+                <span style=" border: 0px solid;">&nbsp;</span>
+            </li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li style="flex:0.8;"><%=mDetailWorker[i].name%></li>
+
+        </ul>
+        <% } %>
+        <% for(let i = dataListLeave.length; i < 30; i++){ %>
+        <ul class="tblData">
+            <li style="flex:0.3;"><%=(i+1)%></li>
+            <li style="flex:0.5;">&nbsp;</li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li style="flex:0.8;">&nbsp;</li>
+            <li class="lavData">
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li style="flex:0.8;">&nbsp;</li>
+        </ul>
+        <% } %>
+
+    </div>
+    <!-- <div class="boxBtnLeave">
+        <ul>
+            <li>ลาป่วย</li>
+            <li>ลากิจ</li>
+            <li>ออกจากระบบ</li>
+        </ul>
+    </div> -->
+
+</body>
+
+<script>
+    /*var myCanvas = document.getElementById('sick')
+    var ctx = myCanvas.getContext('2d')
+    var imgPersonal = new Image();
+    imgPersonal.src = "/images/sick.jpg"
+    ctx.drawImage(imgPersonal, 0, 0, 120, 80, 0, 0, 120, 80)
+    console.log("teset") */
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#boxInpLeave').hide()
+        $('#boxInpLeave2').hide()
+    });
+    let step = 0;
+
+    function logout() {
+        window.location = "/logout"
+    }
+
+
+
+
+
+    function validateLeave() {
+
+        let valDateStart = document.getElementsByName('dateStart').value
+        console.log("valComment " + valDateStart)
+
+        let valComment = document.getElementById('valComment').value
+        let valNameType = document.getElementById('valNameType').value
+        console.log("valTypeComment = " + valNameType)
+
+
+        if (valDateStart == "" || valDateStart == undefined) {
+            alert('โปรดกรอกวันที่')
+            return false
+        }
+
+        if (valDateStart != undefined && valNameType == '') {
+            alert('โปรดกรอกเหตุผลการลา')
+            return false
+        }
+    }
+</script>
+
+</html>

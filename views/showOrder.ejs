@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Admin</title>
+</head>
+
+<body>
+    <div class="mainContainer">
+        <%- include('header') %>
+        <section>
+            <%- include('menu') %>
+            <article>
+                <div class="artTitle"><%=title%></div>
+                <form action="/editOrder" method="post">
+                    <% for(let x=0; x < 1; x++) { %>
+
+                    <ul class="formInput">
+                        <!-- <li>
+                            <label>ค้นหาจากชื่อ</label>
+                            <input type="text" name="inpSearchName" onkeyup="fnSearchName(<%=x%>)">
+                            <span></span>
+                        </li> -->
+                        <li>
+                            <label>ค้นหาจากรายการ</label>
+                            <select name="valDep" id="" onchange="loadName(<%=x%>)">
+                                <option value="">แผนก</option>
+                                <option value="">-----</option>
+                                <% for(let i=0; i < dataDp.length; i++){ %>
+                                <option value="<%=dataDp[i].id_dp%>"><%=dataDp[i].namedp%></option>
+                                <% } %>
+                            </select>
+                            <select name="valNameList" id="" onchange="selectName(<%=x%>)">
+                                <option value="">ชื่อ</option>
+                                <option value="">-----</option>
+                            </select>
+                            <span></span>
+                        </li>
+                        <li>
+                            <% if(x == 0){ %>
+                            <label>ชื่อเจ้าของใบลา</label>
+                            <% }else{ %>
+                            <label>ผู้อนุญาต ลำดับขั้นที่&nbsp;<%=x%></label>
+                            <% } %>
+                            <input id="valNameSelect" type="text" name="valName" disabled>
+                            <span></span>
+                        </li>
+                    </ul>
+                    <% } %>
+                    <div class="boxEdit" id="boxEdit"></div>
+                    <ul class="boxDetailOrder" id="boxDetailOrder">
+                        <li>Detail</li>
+                    </ul>
+
+                    <!-- <ul class="btnSubmit">
+                        <li>
+                            <button type="submit">บันทึกแก้ไข</button>
+                            <button type="reset" style="color:red;">Reset</button>
+                        </li>
+                    </ul> -->
+                </form>
+
+
+            </article>
+        </section>
+        <%- include('footer') %>
+    </div>
+</body>
+<script>
+    function loadName(i) {
+        //console.log("i=" + i)
+        let valDep = document.getElementsByName('valDep')[i].value
+        console.log("valId =" + valDep)
+        $.ajax({
+            type: "GET",
+            url: "/nameList/" + valDep,
+            dataType: "json",
+            success: function (resp) {
+                //console.log(resp[1].name)
+                console.log(resp.length)
+                let txt = "<option value=''>โปรดเลือกชื่อ</option>"
+                for (l = 0; l < resp.length; l++) {
+                    txt += "<option value='" + resp[l].id_user + "'>" + resp[l].name + " " + resp[l]
+                        .surname + "</option>"
+                }
+                document.getElementsByName('valNameList')[i].innerHTML = txt
+                document.getElementById('boxDetailOrder').innerHTML = "" // Clear รายการ Order
+            }
+        });
+    }
+
+    function selectName2(i) {
+        //console.log("i=" + i)
+        let valNameId = document.getElementsByName('valNameList')[i].value
+        //console.log(valNameId)  // ex 321 สุรนาท
+        let valId = document.getElementsByName('valName')[i].value = valNameId
+        var valDatas = '<%- JSON.stringify(dataUser) %>'
+        var arr = JSON.parse(valDatas)
+        console.log(arr)
+        console.log("selectName2")
+        let valTxt = ''
+        document.getElementsByName('valName')[i].value = valTxt
+
+
+
+    }
+
+    function selectName(i) {
+        var valDatas = '<%- JSON.stringify(dataUser) %>'
+        //console.log(valDatas)
+        var arr = JSON.parse(valDatas);
+        let valNameId = document.getElementsByName('valNameList')[i].value
+        console.log('valName = ' + valNameId)
+        let valTxt = 'dd'
+        for (d = 0; d < arr.length; d++) {
+            if (arr[d].id_user == valNameId)
+                valTxt = arr[d].name + " " + arr[d].surname
+            //console.log(arr[d].name)
+        }
+        document.getElementsByName('valName')[i].value = valTxt
+        $.ajax({
+            type: "GET",
+            url: "/indexOderById/" + valNameId,
+            dataType: "json",
+            success: function (resp) {
+                console.log(resp)
+                //console.log(resp.dataName[0][0].name)
+                //console.log(resp.dataName[0][0].name)
+                //let data = resp[0]
+                //let respDataName = resp.dataName[0]
+                //let respDataNameOrder1 = resp.dataName[0]
+                //console.log(respDataName.name)
+                ///console.log(resp.dataDp.length)
+                //document.getElementById('boxEdit').innerHTML = txt
+                let txt = ""
+                if (resp.dataName == 'noData') {
+                    txt = "ยังไม่มีข้อมูล"
+                } else {
+
+                    if (resp.dataName[0].length != 0) {
+                        txt += "<li><label>เจ้าของใบลา </label><span>" + resp.dataName[0][0].name + " " +
+                            resp.dataName[0][0].surname +
+                            "</span><span><i class='material-icons' onclick='delPelOrder(" + resp.dataName[
+                                0][0].id_user + ")'>delete_forever</i></span></li>"
+                    }
+                    if (resp.dataName[1].length != 0) {
+                        txt += "<li><label>ผู้อนุญาต ลำดับขั้นที่ 1 </label><span>" + resp.dataName[1][0]
+                            .name + " " +
+                            resp.dataName[1][0].surname +
+                            "</span><span></span></li>"
+                    }
+                    if (resp.dataName[2].length != 0) {
+                        txt += "<li><label>ผู้อนุญาต ลำดับขั้นที่ 2 </label><span>" + resp.dataName[2][0]
+                            .name + " " +
+                            resp.dataName[2][0].surname +
+                            "</span><span></span></li>"
+                    }
+                    if (resp.dataName[3].length != 0) {
+                        txt += "<li><label>ผู้อนุญาต ลำดับขั้นที่ 3 </label><span>" + resp.dataName[3][0]
+                            .name + " " +
+                            resp.dataName[3][0].surname +
+                            "</span><span></span></li>"
+                    }
+                    if (resp.dataName[4].length != 0) {
+                        txt += "<li><label>ผู้อนุญาต ลำดับขั้นที่ 4 </label><span>" + resp.dataName[4][0]
+                            .name + " " +
+                            resp.dataName[4][0].surname +
+                            "</span><span></span></li>"
+                    }
+                    if (resp.dataName[5].length != 0) {
+                        txt += "<li><label>ผู้อนุญาต ลำดับขั้นที่ 5 </label><span>" + resp.dataName[5][0]
+                            .name +
+                            "</span><span></span></li>"
+                    }
+                    if (resp.dataName[6].length != 0) {
+                        txt += "<li><label>ผู้อนุญาต ลำดับขั้นที่ 6 </label><span>" + resp.dataName[6][0]
+                            .name + " " +
+                            resp.dataName[6][0].surname +
+                            "</span><span></span></li>"
+                    }
+                    if (resp.dataName[7].length != 0) {
+                        txt += "<li><label>ผู้อนุญาต ลำดับขั้นที่ 7 </label><span>" + resp.dataName[7][0]
+                            .name + " " +
+                            resp.dataName[7][0].surname +
+                            "</span><span></span></li>"
+                    }
+                }
+
+                document.getElementById('boxDetailOrder').innerHTML = txt
+
+            }
+        });
+    }
+
+
+
+    function fnSearchName(s) {
+        let index = s
+        //console.log("index = " + index)
+        let valSerch = document.getElementsByName('inpSearchName')[s].value
+        console.log(valSerch)
+        $.ajax({
+            type: "GET",
+            url: "/allNameUser/" + valSerch,
+            dataType: "json",
+            success: function (res) {
+                console.log(res)
+            }
+        });
+    }
+
+
+    function delPelOrder(i) {
+        console.log('Id= ' + i)
+        if (confirm("ต้องการลบ")) {
+            window.location = "/delPerOrder/" + i
+        }
+    }
+</script>
+
+</html>

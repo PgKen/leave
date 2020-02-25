@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Admin</title>
+</head>
+
+<body>
+    <div class="mainContainer">
+        <%- include('header') %>
+        <section>
+            <%- include('menu') %>
+            <article>
+                <div class="artTitle"><%=title%></div>
+                <form action="/editOrder" method="post">
+                    <% for(let x=0; x < 1; x++) { %>
+
+                    <ul class="formInput">
+                        <!-- <li>
+                            <label>ค้นหาจากชื่อ</label>
+                            <input type="text" name="inpSearchName" onkeyup="fnSearchName(<%=x%>)">
+                            <span></span>
+                        </li> -->
+                        <li>
+                            <label>ค้นหาจากรายการ</label>
+                            <select name="valDep" id="" onchange="loadName(<%=x%>)">
+                                <option value="">แผนก</option>
+                                <option value="">-----</option>
+                                <% for(let i=0; i < dataDp.length; i++){ %>
+                                <option value="<%=dataDp[i].id_dp%>"><%=dataDp[i].namedp%></option>
+                                <% } %>
+                            </select>
+                            <select name="valNameList" id="" onchange="selectName(<%=x%>)">
+                                <option value="">ชื่อ</option>
+
+                            </select>
+                            <span></span>
+                        </li>
+                        <li>
+                            <% if(x == 0){ %>
+                            <label>ชื่อเจ้าของใบลา</label>
+                            <% }else{ %>
+                            <label>ผู้อนุญาต ลำดับขั้นที่&nbsp;<%=x%></label>
+                            <% } %>
+                            <input id="valNameSelect" type="text" name="valName" disabled>
+                            <span></span>
+                        </li>
+                    </ul>
+                    <% } %>
+                    <div class="boxEdit" id="boxEdit"></div>
+
+                    <ul class="btnSubmit">
+                        <li>
+                            <button type="submit">บันทึกแก้ไข</button>
+                            <button type="reset" style="color:red;">Reset</button>
+                        </li>
+                    </ul>
+                </form>
+
+
+            </article>
+        </section>
+        <%- include('footer') %>
+    </div>
+</body>
+<script>
+    function loadName(i) {
+        //console.log("i=" + i)
+        let valDep = document.getElementsByName('valDep')[i].value
+        console.log("valId =" + valDep)
+        $.ajax({
+            type: "GET",
+            url: "/nameList/" + valDep,
+            dataType: "json",
+            success: function (resp) {
+                console.log(resp[1].name)
+                console.log(resp.length)
+                let txt = "<option value=''>โปรดเลือกชื่อ</option>"
+                for (l = 0; l < resp.length; l++) {
+                    txt += "<option value='" + resp[l].id_user + "'>" + resp[l].name + " " + resp[l]
+                        .surname + "</option>"
+                }
+                document.getElementsByName('valNameList')[i].innerHTML = txt
+            }
+        });
+    }
+
+    function selectName2(i) {
+        //console.log("i=" + i)
+        let valNameId = document.getElementsByName('valNameList')[i].value
+        //console.log(valNameId)  // ex 321 สุรนาท
+        let valId = document.getElementsByName('valName')[i].value = valNameId
+        var valDatas = '<%- JSON.stringify(dataUser) %>'
+        var arr = JSON.parse(valDatas)
+        console.log(arr)
+        console.log("selectName2")
+        let valTxt = ''
+
+
+        document.getElementsByName('valName')[i].value = valTxt
+
+    }
+
+    function selectName(i) {
+        var valDatas = '<%- JSON.stringify(dataUser) %>'
+        //console.log(valDatas)
+        var arr = JSON.parse(valDatas);
+        let valNameId = document.getElementsByName('valNameList')[i].value
+        console.log('valName = ' + valNameId)
+        let valTxt = 'dd'
+        for (d = 0; d < arr.length; d++) {
+            if (arr[d].id_user == valNameId)
+                valTxt = arr[d].name + " " + arr[d].surname
+            //console.log(arr[d].name)
+        }
+        document.getElementsByName('valName')[i].value = valTxt
+        $.ajax({
+            type: "GET",
+            url: "/showOrder/" + valNameId,
+            dataType: "json",
+            success: function (resp) {
+                //console.log(resp.dataDp.length)
+                let lengDp = resp.dataDp.length
+                let txt = ''
+                let m = 1
+                for (i = 0; i < 8; i++) {
+                    m = i + 1
+                    txt += "<ul class='formInput'>"
+                    txt += "<li>"
+                    txt += "<label>ค้นหาจากรายการ</label>"
+                    txt += "<select name='valDep' onchange='loadName(" + m + ")'>"
+                    txt += "<option value=''>แผนก</option>"
+                    txt += "<option value=''>-----</option>"
+
+                    for (di = 0; di < lengDp; di++) {
+                        txt += "<option value='" + resp.dataDp[di].id_dp + "'>" + resp.dataDp[
+                                di].namedp +
+                            "</option>"
+                    }
+
+                    txt += "</select>"
+                    txt += "<select name='valNameList' onchange='selectName2(" + m + ")'>"
+                    txt += "<option value=''>ชื่อ</option>"
+                    txt += "<option value=''>-----</option>"
+                    txt += "</select>"
+                    txt += "<span></span>"
+                    txt += "</li>"
+                    txt += "<li>"
+                    txt += "<label>ผู้อนุญาต ลำดับขั้นที่&nbsp;" + m + "</label>"
+
+                    //idUserOrder = order_
+                    for (xi = 0; xi < resp.dataUser.length; xi++) {
+                        //if(resp.dataUser[xi].id_user == )
+                        //txt += "xi=" + xi
+                    }
+
+                    /******/
+
+
+                    /****/
+
+                    txt +=
+                        "<input class='valNameSelect' type='text' name='valName' value='' disabled>"
+
+                    txt += "<span></span>"
+                    txt += "</li>"
+                    txt += "</ul>"
+                }
+                document.getElementById('boxEdit').innerHTML = txt
+            }
+        });
+    }
+
+
+    function fnSearchName(s) {
+        let index = s
+        //console.log("index = " + index)
+        let valSerch = document.getElementsByName('inpSearchName')[s].value
+        console.log(valSerch)
+        $.ajax({
+            type: "GET",
+            url: "/allNameUser/" + valSerch,
+            dataType: "json",
+            success: function (res) {
+                console.log(res)
+            }
+        });
+    }
+</script>
+
+</html>

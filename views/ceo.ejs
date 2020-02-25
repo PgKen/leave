@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/javascripts/script.js"></script>
+
+    <title><%= title %></title>
+</head>
+
+<body>
+    <div class="boxTopMenu">
+        <ul>
+            <!-- <li>
+                <i class="material-icons">
+                    local_hospital
+                </i>
+                <span onclick="fnSick()">
+                    ลาป่วย
+                </span>
+            </li>
+            <li>
+                <i class="material-icons">
+                    transfer_within_a_station
+                </i>
+                <span onclick="fnLeave()">
+                    ลากิจ
+                </span>
+            </li> -->
+            <li style="border: none;"></li>
+            <li style="border: none;"></li>
+            <li style="border: none;"></li>
+            <li style="border: none;"></li>
+            <li>&nbsp;</li>
+            <li onclick="logout()">
+                <i class="material-icons">
+                    exit_to_app
+                </i>
+                <span>
+                    ออกจากระบบ
+                </span>
+            </li>
+        </ul>
+    </div>
+    <div class="boxCeoData">
+        <%= //arrAllDp.length %>
+        <%= //mAllStarf[0].length %>
+        <!-- <ul>
+            <% //for(let i = 0; i < arrAllDp.length; i++){%>
+            <li><%= //arrAllDp[i].namedp%></li>
+            <% //} %>
+        </ul> -->
+        <ul class="frist">
+            <li>
+                <a name="link"></a>
+                <span style="flex: 0.3;">id</span>
+                <span style="flex:2;">ชื่อ</span>
+                <span>รวมลาป่วย</span>
+                <span>รวมลากิจ</span>
+                <span>รวมขาดงาน</span>
+            </li>
+            <% let li = 0 %>
+            <% for(let i = 0; i < arrAllDp.length; i++){%>
+            <% for(let l = 0; l < mAllStarf[i].length; l++){%>
+
+            <% if(l == 0) { %>
+            <li class="headDp"><%= mAllStarf[i][l].namedp%></li>
+            <% } %>
+            <li>
+                <span style="flex:0.3;"><%= mAllStarf[i][l].id%></span>
+                <span style="flex:2;"><%= mAllStarf[i][l].name%></span>
+                <span><%= dataLeave[li].totalSick%></span>
+                <span><%= dataLeave[li].totalLeave%></span>
+                <span><%= dataLeave[li].totalCut%></span>
+            </li>
+            <% li = li + 1 %>
+            <% } %>
+            <% } %>
+            <%//= li %>
+            <li>
+                <a href="#link">Top</a>
+            </li>
+        </ul>
+        <!-- <ul style="display: none;"> -->
+
+        <ul>
+            <form action="/approv_3" method="post">
+
+                <li style="margin: 0 10px 0 10px;">
+                    <span style="flex: 0.3;">id</span>
+                    <span>ชื่อ</span>
+                    <span>วันเริ่มลา</span>
+                    <span>สิ้นสุดวันลา</span>
+                    <span>รวมลาป่วย</span>
+                    <span>รวมลากิจ</span>
+                    <span>รวมขาดงาน</span>
+                    <span>สาเหตุ</span>
+                    <span style="flex: 0.3;">
+                        <i class="material-icons" style="color:greenyellow;">
+                            done
+                        </i>
+                    </span>
+                    <span style="flex: 0.3;">
+                        <i class="material-icons" style="color:red;">
+                            clear
+                        </i>
+                    </span>
+                </li>
+                <% for(let m = 0; m < datatotalLeave.length; m++) { %>
+
+                <% for(let n = 0; n < mindexStarfLeave[m].length; n++) { %>
+
+
+                <li>
+                    <input type="hidden" name="getId" value="<%= mindexStarfLeave[m][n].id %>">
+                    <span style="flex: 0.3;"><%= mindexStarfLeave[m][n].id %></span>
+
+                    <% if(n == 0){ %>
+                    <span><%= allStarfLeave[m][0].name %>&nbsp;&nbsp;<%= allStarfLeave[m][0].surname %></span>
+                    <% }else{ %>
+                    <span>&nbsp;</span>
+                    <% } %>
+                    <span style="justify-content: center;"><%= mindexStarfLeave[m][n].dateStart %></span>
+                    <span><%= mindexStarfLeave[m][n].dateEnd %></span>
+
+                    <% if(mindexStarfLeave[m][n].typel < 10) { %>
+                    <span><%= mindexStarfLeave[m][n].unitDate %></span>
+                    <span>-</span>
+                    <span>-</span>
+                    <% }else if(mindexStarfLeave[m][n].typel == 10){  %>
+                    <span>-</span>
+                    <span><%= mindexStarfLeave[m][n].unitDate %></span>
+                    <span>-</span>
+                    <% }else if(mindexStarfLeave[m][n].typel == 20){ %>
+                    <span>-</span>
+                    <span>-</span>
+                    <span><%= mindexStarfLeave[m][n].unitDate %></span>
+                    <% }%>
+                    <span><%= mindexStarfLeave[m][n].cause%></span>
+                    <span style="flex: 0.3;">
+                        <i class="material-icons" style="color:green;" onclick="updateStatus_3()">
+                            check_circle
+                        </i>
+                    </span>
+                    <span style="flex: 0.3;">
+                        <i class="material-icons" style="color:red;" onclick="updateStatus_3_cut()">
+                            cancel
+                        </i>
+                    </span>
+                </li>
+                <% } %>
+                <li class="headName">
+                    <span style="flex: 0.3;">&nbsp;</span>
+                    <span><%= //allStarfLeave[m][0].name %>&nbsp;&nbsp;<%= //allStarfLeave[m][0].surname %></span>
+                    <!-- <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span> -->
+                </li>
+                <% } %>
+                <li style="margin: 0 10px 0 10px;">
+                    <span style="flex: 0.3;">&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span style="flex: 0.3;">
+                        &nbsp;
+                    </span>
+                    <span style="flex: 0.3;">
+                        &nbsp;
+                    </span>
+                </li>
+                <% if(datatotalLeave.length == 0){ %>
+                <li class="btnClass" style="margin-top: 40px;">
+                    <span>ไม่มีผู้ขอลา</span>
+                </li>
+
+                <% }else{ %>
+                <li class="btnClass">
+                    <span style="flex: 0.3;">&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>&nbsp;</span>
+                    <span>
+                        <button type="submit">อนุมัติทั้งหมด</button>
+                    </span>
+                    <span style="flex: 0.3;">
+                        &nbsp;
+                    </span>
+                </li>
+                <% } %>
+            </form>
+        </ul>
+
+    </div>
+
+</body>
+
+<script>
+    function updateStatus_3() {
+        console.log("3")
+    }
+
+    function updateStatus_3_cut() {
+        console.log("cut")
+    }
+</script>
+
+
+</html>

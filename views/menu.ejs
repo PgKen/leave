@@ -1,0 +1,62 @@
+<nav>
+    <ul>
+        <li>
+            <i class="material-icons">
+                home
+            </i>
+            <span>
+                หน้าแรก
+            </span>
+        </li>
+        <li onclick="linkUrl(1)">
+            <i class="material-icons">
+                settings_applications
+            </i>
+            <span>
+                ตั้งค่าลำดับขั้น
+            </span>
+        </li>
+        <li onclick="linkUrl(2)">
+            <i class="material-icons">
+                settings_applications
+            </i>
+            <span>
+                แก้ไขลำดับขั้น
+            </span>
+        </li>
+        <li onclick="linkUrl(3)">
+            <i class="material-icons">
+                settings_applications
+            </i>
+            <span>
+                แสดงลำดับขั้น
+            </span>
+        </li>
+        <li>
+            <i class="material-icons">
+                exit_to_app
+            </i>
+            <span>
+                ออกจากระบบ
+            </span>
+        </li>
+    </ul>
+</nav>
+<script>
+    function linkUrl(i) {
+        switch (i) {
+            case 2:
+                window.location = "/editGrade"
+                break;
+            case 1:
+                window.location = "/admin"
+                break;
+            case 3:
+                window.location = "/showOrder"
+                break;
+
+            default:
+                break;
+        }
+    }
+</script>
