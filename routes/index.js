@@ -249,11 +249,14 @@ sqlListUserLeave += "AND leavedata.status = 1 "
 // หา ID ผู้ขอลา
 let sqlListUserLeaveForUser = "SELECT leaveorder.id,leaveorder.myId,leaveorder.order_1,"
 sqlListUserLeaveForUser += "leaveorder.order_2,leaveorder.order_3,leaveorder.status,leavedata.type_l,leavedata.unit_date,"
-sqlListUserLeaveForUser += "leavedata.myId AS userId,leavedata.status As statusLeave,leavedata.id As idData "
+sqlListUserLeaveForUser += "leavedata.myId AS userId,leavedata.status As statusLeave,leavedata.id As idData,"
+sqlListUserLeaveForUser += "leavedata.date_start,leavedata.date_end,leavedata.date_create,leavedata.cause "
 sqlListUserLeaveForUser += "FROM leaveorder "
 sqlListUserLeaveForUser += "INNER JOIN leavedata ON leaveorder.myId = leavedata.myId "
 sqlListUserLeaveForUser += "WHERE leaveorder.order_1 = ? "
 sqlListUserLeaveForUser += "AND leavedata.status = 0 "
+// console.log(sqlListUserLeaveForUser);
+
 //sqlListUserLeave += "GROUP BY myId "
 
 
@@ -617,10 +620,14 @@ router.post('/loginUser', (req, res) => {
 
   connp.query(sql, [pass, user], (err, result) => {
     if (err) throw console.log(err)
+    console.log(result);
+
     //console.log(result[0].idper);
     if (result != "") { // มีชื่อพนักงานใน DATABASE
       //let val = result[0].idper
       let val = result[0].id_user
+      console.log("userId = " + val);
+
 
       // ตรวจสอบผู้บริหาร
       let sql = "SELECT * FROM id_ceo WHERE id_ceo = ? AND ceo_status = 1"
@@ -637,7 +644,7 @@ router.post('/loginUser', (req, res) => {
             expires: new Date(Date.now() + 2000000),
             httpOnly: true
           })
-          res.redirect('ceo')
+          res.redirect('ceo/0/1/0')
         } else {
 
 
@@ -703,14 +710,17 @@ router.get('/chkWorker/:wuser/:wpass', (req, res) => {
 })
 
 
-router.get('/testc', (req, res) => {
-  let val = req.cookies["idUser"]
-  console.log("val =" + val);
-  res.end()
+// router.get('/testc', (req, res) => {
+//   let val = req.cookies["idUser"]
+//   console.log("val =" + val);
+//   res.end()
 
-})
+// })
 
 router.get('/userleave', (req, res) => {
+  let arrListOrder = [] // รายการลำดับขั้น
+  let arrListOrderId = [] // list Id ลำดับผู้อนุมัติ
+  let arrListOrderName = [] // list ชื่อ ลำดับผู้อนุมัติ
   let ckIduser = req.cookies['idUser'] // บันทึก Cookie
   if (ckIduser == undefined) {
     res.redirect('login')
@@ -737,10 +747,73 @@ router.get('/userleave', (req, res) => {
 
     // res.end()
     async function main() {
-      await userIndex()
+      await newListOrder()
     }
 
+    // เพิ่มเข้ามา
+    function newListOrder() {
+      let sql = "SELECT * FROM `leaveorder` WHERE myId = ?"
+      connl.query(sql, [ckIduser], (err, resListOrder) => {
+        console.log("****-----");
+        // console.log(resListOrder);
+        arrListOrder = resListOrder
+        console.log("****-----");
+        addIdOrder()
+      })
+    }
+
+    function addIdOrder() {
+
+      async function addOrderMain() {
+        await listIdOrder()
+      }
+
+      function listIdOrder() {
+        arrListOrderId.push(arrListOrder[0].order_1)
+        arrListOrderId.push(arrListOrder[0].order_2)
+        arrListOrderId.push(arrListOrder[0].order_3)
+        arrListOrderId.push(arrListOrder[0].order_4)
+        arrListOrderId.push(arrListOrder[0].order_5)
+        listIdOrderAsName()
+      }
+
+      function listIdOrderAsName() {
+        let sql = sqlIndexUser
+        // console.log(arrListOrderId);
+
+
+        for (let i = 0; i < arrListOrderId.length; i++) {
+          //for (let i = 0; i < 1; i++) {
+
+          conn.query(sql, [arrListOrderId[i]], (err, resName) => {
+            // console.log(resName);
+            if (arrListOrderId[i] == 0) {
+              arrListOrderName.push('')
+            } else {
+              arrListOrderName.push(resName[0].name)
+            }
+
+          })
+          if (i == (arrListOrderId.length - 1)) {
+            addOrderMainSendData()
+          }
+        }
+      }
+
+      function addOrderMainSendData() {
+        userIndex()
+      }
+
+      addOrderMain()
+    }
+    // End เพิ่มเข้ามา
+
     function userIndex() {
+      // console.log("****-----userIndex");
+      // console.log(arrListOrderId);
+      // console.log(arrListOrderName);
+
+      //console.log(arrListOrder[0].myId);
       // ขอเช็ค IdUser ก่อน ว่าเป็นผู้อนุมัติหรือไม่
       // END ขอเช็ค IdUser ก่อน ว่าเป็นผู้อนุมัติหรือไม่      
       let sql = sqlIndexUserStar
@@ -822,16 +895,16 @@ router.get('/userleave', (req, res) => {
       console.log("validUser = " + validUser);
       // หา MyId ก่อน
       let sql = sqlShowOrder
-      console.log("test");
-      console.log(sql);
+      // console.log("test");
+      // console.log(sql);
 
       connl.query(sql, [validUser], (err, result) => {
         if (err) throw console.log(err)
         if (result == "") { // ถ้าไม่มี อาจเป็นผู้บริหาร ให้เรียก function 
-          console.log(result);
+          // console.log(result);
           let sql3 = "SELECT * FROM leaveorder WHERE order_1 = ? "
           // console.log("TEST-GO");
-          console.log("tesrt");
+          // console.log("tesrt");
           let validUser = mapDataUser[0].idUser
           // console.log(typeof (validUser));
           console.log("validUser = " + validUser);
@@ -839,7 +912,7 @@ router.get('/userleave', (req, res) => {
           connl.query(sql3, ['validUser'], (err, result3) => {
             if (err) throw console.log(err);
 
-            console.log(result3);
+            // console.log(result3);
 
             if (result3 != "") {
               res.send("No Config")
@@ -851,7 +924,7 @@ router.get('/userleave', (req, res) => {
 
         } else {
 
-          console.log(result);
+          // console.log(result);
           let sql2 = sqlIndexUser
           let valOrder1 = result[0].order_1
           console.log("valOrder1 = " + valOrder1);
@@ -961,13 +1034,18 @@ router.get('/userleave', (req, res) => {
             workerId: result.workerId
           }
         })
-        // console.log("TEST DATA");
-
-        // console.log(dataListLeave);
-
-        workerUser(mapDataUser, mapDataOrder1, mapDataOrder2, dataListLeave)
+        totalReport(mapDataUser, mapDataOrder1, mapDataOrder2, dataListLeave)
       })
     }
+
+    // รายงานสถติรวม
+    function totalReport(mapDataUser, mapDataOrder1, mapDataOrder2, dataListLeave) {
+      let validUser = mapDataUser[0].idUser
+      console.log("myidUser = " + validUser);
+
+      workerUser(mapDataUser, mapDataOrder1, mapDataOrder2, dataListLeave)
+    }
+    // End รายงานสถติรวม
 
     // หาผู้ปฎิบัติงานแทน ในส่วนพนักงานทั่วไป
     function workerUser(mapDataUser, mapDataOrder1, mapDataOrder2, dataListLeave) {
@@ -1013,8 +1091,6 @@ router.get('/userleave', (req, res) => {
         }
         //
       }
-
-
     }
     // End หาผู้ปฎิบัติงานแทน ในส่วนพนักงานทั่วไป
 
@@ -1022,7 +1098,7 @@ router.get('/userleave', (req, res) => {
     // end data วันลา
 
     function sendData(dataUser, dataOrder1, dataOrder2, dataListLeave, detailWorker) {
-      // console.log(detailWorker);
+      // console.log(arrListOrderName);
 
       // map ผู้ปฎิบัติงานแทน
       let mDetailWorker = ""
@@ -1059,8 +1135,10 @@ router.get('/userleave', (req, res) => {
         dataOrder1,
         dataOrder2,
         dataListLeave,
-        mDetailWorker
+        mDetailWorker,
+        arrListOrderName // ผู้อนุมัติ ใบเขียว
       })
+
     }
 
     /*if (ckIduser == 321) {
@@ -1080,441 +1158,444 @@ router.get('/userOrder1', (req, res) => {
 });
 
 
-router.get('/userOrder1TEST', (req, res) => {
-  // console.log("test00001");
+// router.get('/userOrder1TEST', (req, res) => {
+//   // console.log("test00001");
 
-  let idChkUser = req.cookies["idUser"]
-  if (idChkUser == undefined) {
-    res.redirect('login')
-  } else {
-    console.log("cookies = " + idChkUser);
-
-
-    async function main() {
-      await fnFindCount()
-    }
-
-    function fnFindCount() {
-      let sql = "SELECT COUNT( * ) AS numCount FROM leaveorder WHERE order_1 = ?"
-      connl.query(sql, [idChkUser], (err, result) => {
-        fnListMyIdAll(result[0].numCount)
-        //res.send()
-      })
-    }
-
-    function fnListMyIdAll(numCount) {
-      var dataObj = []
-      console.log("numCount = " + numCount);
-      let sql = sqlFindMyId
-      connl.query(sql, [idChkUser], (err, result) => {
-        if (err) throw console.log(err)
-        //console.log(result);
-        let sql = sqlFindUserForId_user
-
-        for (let i = 0; i < numCount; i++) {
-          conn.query(sql, [result[i].myId], (err, result2) => {
-            //console.log(result2);
-            async function main() {
-              await dataPush()
-            }
-
-            function dataPush() {
-              //console.log(result2);
-              dataObj.push(result2)
-              //console.log(dataObj);
-              chkEnd()
-            }
-
-            function chkEnd() {
-              //console.log(numCount);
-
-              if (i == (numCount - 1)) {
-                fnTotalUnitDateSick(numCount, dataObj)
-              }
-            }
-            main()
-          })
-        }
-      })
-    }
-
-    function fnTotalUnitDateSick(numCount, dataObj) {
-      //console.log("dataObj = " + dataObj[1][0].id_user);
-      let objTotalSick = []
-
-      for (let i = 0; i < numCount; i++) {
-        let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l < 10 AND status = 3 AND myId = ?"
-        connl.query(sql, [dataObj[i][0].id_user], (err, result) => {
-          objTotalSick.push(result)
-          //console.log(result[i].totalUnitDate);
-
-          if (i == (numCount - 1)) {
-            fnTotalUnitDataLeave(numCount, dataObj, objTotalSick)
-          }
-        })
-      }
-    }
-
-    function fnTotalUnitDataLeave(numCount, dataObj, objTotalSick) {
-      let objTotalLeave = []
-      for (let i = 0; i < numCount; i++) {
-        let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l = 10 AND myId = ?"
-        connl.query(sql, [dataObj[i][0].id_user], (err, result) => {
-          objTotalLeave.push(result)
-          if (i == (numCount - 1)) {
-            meData(numCount, dataObj, objTotalSick, objTotalLeave)
-          }
-        })
-      }
-    }
-    // หาชื่อ-นามสกุล / id
-    function meData(numCount, dataObj, objTotalSick, objTotalLeave) {
-      let sql = sqlFindUserForId_user
-      let idChkUser = req.cookies["idUser"]
-
-      let chkLavel = req.cookies['lavel']
-      //console.log("chkLavel = " + chkLavel);
-
-      conn.query(sql, [idChkUser], (err, result) => {
-        //console.log(result);
-
-        if (chkLavel == 1) {
-          findSickMe(numCount, dataObj, objTotalSick, objTotalLeave, result)
-        } else {
-          meLeaveData = null
-          sendData(numCount, dataObj, objTotalSick, objTotalLeave, result, meLeaveData)
-        }
-
-        // meLeaveData = null
-        // sendData(numCount, dataObj, objTotalSick, objTotalLeave, result, meLeaveData)
-      })
-    }
-
-    // หาวันลาของตนเอง
-    function findSickMe(numCount, dataObj, objTotalSick, objTotalLeave, meData) {
+//   let idChkUser = req.cookies["idUser"]
+//   if (idChkUser == undefined) {
+//     res.redirect('login')
+//   } else {
+//     console.log("cookies = " + idChkUser);
 
 
-      // let objTotalLeaveMe = []
-      let idChkUser = req.cookies['idUser']
-      //console.log("idChkUser = " + idChkUser);
+//     async function main() {
+//       await fnFindCount()
+//     }
 
-      let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l < 10 AND STATUS = 3 AND myId = ?"
-      connl.query(sql, [idChkUser], (err, result) => {
-        if (err) throw console.log(err)
-        //console.log(result);
-        //res.send(result)
-        if (result[0].totalUnitDate == null) {
-          result[0].totalUnitDate = 0
-        }
-        findLeaveMe(numCount, dataObj, objTotalSick, objTotalLeave, meData, result)
-      })
-    }
+//     function fnFindCount() {
+//       let sql = "SELECT COUNT( * ) AS numCount FROM leaveorder WHERE order_1 = ?"
+//       connl.query(sql, [idChkUser], (err, result) => {
+//         fnListMyIdAll(result[0].numCount)
+//         //res.send()
+//       })
+//     }
 
-    function findLeaveMe(numCount, dataObj, objTotalSick, objTotalLeave, meData, meSickData) { // ลากิจ
-      let idChkUser = req.cookies['idUser']
-      //console.log("idChkUser = " + idChkUser);
+//     function fnListMyIdAll(numCount) {
+//       var dataObj = []
+//       console.log("numCount = " + numCount);
+//       let sql = sqlFindMyId
+//       connl.query(sql, [idChkUser], (err, result) => {
+//         if (err) throw console.log(err)
+//         //console.log(result);
+//         let sql = sqlFindUserForId_user
 
+//         for (let i = 0; i < numCount; i++) {
+//           conn.query(sql, [result[i].myId], (err, result2) => {
+//             //console.log(result2);
+//             async function main() {
+//               await dataPush()
+//             }
 
-      let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l = 10 AND status = 3 AND myId = ?"
-      connl.query(sql, [idChkUser], (err, result) => {
-        if (err) throw console.log(err)
-        //console.log(result);
-        if (result[0].totalUnitDate == null) {
-          result[0].totalUnitDate = 0
-        }
-        findLeaveMeCut(numCount, dataObj, objTotalSick, objTotalLeave, meData, meSickData, result) // หาวันขาดงาน ของตนเอง
-        //listLeave(numCount, dataObj, objTotalSick, objTotalLeave, meData, meSickData, result)
-      })
+//             function dataPush() {
+//               //console.log(result2);
+//               dataObj.push(result2)
+//               //console.log(dataObj);
+//               chkEnd()
+//             }
 
-    }
+//             function chkEnd() {
+//               //console.log(numCount);
 
-    function findLeaveMeCut(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData) {
-      let sql = "SELECT SUM(unit_date) AS totalUnitDate FROM leavedata WHERE type_l = 20 AND status = 3 AND myId = ? "
-      let idChkUser = req.cookies['idUser']
-      connl.query(sql, [idChkUser], (err, result) => {
-        listLeave(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData)
-      })
-    }
+//               if (i == (numCount - 1)) {
+//                 fnTotalUnitDateSick(numCount, dataObj)
+//               }
+//             }
+//             main()
+//           })
+//         }
+//       })
+//     }
 
+//     function fnTotalUnitDateSick(numCount, dataObj) {
+//       //console.log("dataObj = " + dataObj[1][0].id_user);
+//       let objTotalSick = []
 
-    // end วันลาของตนเอง
+//       for (let i = 0; i < numCount; i++) {
+//         let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l < 10 AND status = 3 AND myId = ?"
+//         connl.query(sql, [dataObj[i][0].id_user], (err, result) => {
+//           objTotalSick.push(result)
+//           //console.log(result[i].totalUnitDate);
 
-    // data วันลา
+//           if (i == (numCount - 1)) {
+//             fnTotalUnitDataLeave(numCount, dataObj, objTotalSick)
+//           }
+//         })
+//       }
+//     }
 
-    function listLeave(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData) {
-      let sql = sqlListIndex
-      let idUser = req.cookies["idUser"]
-      connl.query(sql, [idUser], (err, result) => {
-        if (err) throw console.log(err)
-        // console.log(result);
-        let totalSick = 0
-        let totalLeave = 0
-        let totalCut = 0
-        let dataListLeave = result.map((result) => {
-          let = mDateCreate = result.date_create
-          let = mDateStart = result.date_start
-          let = mDateEnd = result.date_end
-          let = mType = result.type_l
-          if (mType == 10) {
-            mUnitDate = '-'
-            mUnitDate2 = result.unit_date
-            mUnitDate3 = '-'
-            totalLeave += result.unit_date
-          } else if (mType != 99) {
-            mUnitDate = result.unit_date
-            mUnitDate2 = '-'
-            mUnitDate3 = '-'
-            totalSick += result.unit_date
-          }
+//     function fnTotalUnitDataLeave(numCount, dataObj, objTotalSick) {
+//       let objTotalLeave = []
+//       for (let i = 0; i < numCount; i++) {
+//         let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l = 10 AND myId = ?"
+//         connl.query(sql, [dataObj[i][0].id_user], (err, result) => {
+//           objTotalLeave.push(result)
+//           if (i == (numCount - 1)) {
+//             meData(numCount, dataObj, objTotalSick, objTotalLeave)
+//           }
+//         })
+//       }
+//     }
+//     // หาชื่อ-นามสกุล / id
+//     function meData(numCount, dataObj, objTotalSick, objTotalLeave) {
+//       let sql = sqlFindUserForId_user
+//       let idChkUser = req.cookies["idUser"]
 
-          return {
-            leaveId: result.id,
-            myId: result.myId,
-            dateCreate: moment(mDateCreate).format('YYYY-MM-DD'),
-            dateStart: moment(mDateStart).format('YYYY-MM-DD'),
-            dateEnd: moment(mDateEnd).format('YYYY-MM-DD'),
-            unitDate: mUnitDate,
-            unitDate2: mUnitDate2,
-            unitDate3: mUnitDate3,
-            cause: result.cause,
-            status: result.status,
-            totalSick,
-            totalLeave
-          }
-        })
-        userIndex(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave)
-      })
-    }
-    // end data วันลา
+//       let chkLavel = req.cookies['lavel']
+//       //console.log("chkLavel = " + chkLavel);
 
-    // user Data Index
-    function userIndex(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave) {
-      // ขอเช็ค IdUser ก่อน ว่าเป็นผู้อนุมัติหรือไม่
+//       conn.query(sql, [idChkUser], (err, result) => {
+//         //console.log(result);
 
-      // END ขอเช็ค IdUser ก่อน ว่าเป็นผู้อนุมัติหรือไม่      
-      let sql = sqlIndexUserStar
-      let idUser = req.cookies["idUser"]
-      conn.query(sql, [idUser], (err, result) => {
-        if (err) throw console.log(err)
-        //console.log(result)
-        let mapDataUser = result.map((result) => {
-          let dataResult = result
-          let dataAddno = ""
-          let dataMoo = ""
-          let dataVellage = ""
-          let dataRoad = ""
-          let dataNametambon = ""
-          let dataNameAmpur = ""
-          let dataNameProvi = ""
-          /* address */
-          if (dataResult.addno == '-') {
-            dataAddno = ""
-          } else {
-            dataAddno = dataResult.addno
-          }
-          // -------
-          if (dataResult.moo == '-') {
-            dataMoo = ""
-          } else {
-            dataMoo = dataResult.moo
-          }
-          // -------
-          if (dataResult.vellage == '-') {
-            dataVellage = ""
-          } else {
-            dataMoo = dataResult.vellage
-          }
-          // --------
-          if (dataResult.road == '-') {
-            dataRoad = ""
-          } else {
-            dataRoad = dataResult.road
-          }
-          if (dataResult.nametambon == "-") {
-            dataNametambon = ""
-          } else {
-            dataNametambon = dataResult.nametambon
-          }
-          //  ---------
-          if (dataResult.nameAmpur == "-") {
-            dataNameAmpur = ""
-          } else {
-            dataNameAmpur = dataResult.nameAmpur
-          }
-          //  ---------
-          if (dataResult.nameProvi == "-") {
-            dataNameProvi = ""
-          } else {
-            dataNameProvi = dataResult.nameProvi
-          }
+//         if (chkLavel == 1) {
+//           findSickMe(numCount, dataObj, objTotalSick, objTotalLeave, result)
+//         } else {
+//           meLeaveData = null
+//           sendData(numCount, dataObj, objTotalSick, objTotalLeave, result, meLeaveData)
+//         }
 
-          // --------
-          /* end address */
+//         // meLeaveData = null
+//         // sendData(numCount, dataObj, objTotalSick, objTotalLeave, result, meLeaveData)
+//       })
+//     }
 
-          return {
-            nickname: dataResult.fistname,
-            fistname: dataResult.fistname + " " + dataResult.surname,
-            address: dataAddno + " " + dataMoo + " " + dataVellage + " " + dataRoad + " " + dataNametambon + " " + dataNameAmpur + " " + dataNameProvi,
-            username: dataResult.username_user,
-            namedp: dataResult.namedp,
-            tel: dataResult.tel,
-            idUser: dataResult.id_user
-
-          }
-        })
-        orderDep(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser)
-      })
-    }
-    // end user Data Index
-
-    // หาผู้อนุมัติ 1
-    function orderDep(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser) {
-      //console.log(mapDataUser);
-      let validUser = mapDataUser[0].idUser
-      // console.log("validUser = " + validUser);
-      let sql = sqlShowOrder
-      connl.query(sql, [validUser], (err, result) => {
-        if (result == "") {
-          res.send("No data โปรดติดต่อ Admin 002")
-        } else {
-          if (err) throw console.log(err)
-          //console.log(result);
-          let sql2 = sqlIndexUser
-          let valOrder1 = result[0].order_1
-          // console.log("valOrder1 = " + valOrder1);
-
-          conn.query(sql2, [valOrder1], (err, result) => {
-            if (err) throw console.log(err)
-            //console.log(result)
-            //orderDep2(mapDataUser, result)
-            let mapDataOrder1 = []
-            if (result == "") {
-              //console.log("nulllllll");
-              mapDataOrder1.push({
-                name: "-"
-              })
-            } else {
-              //console.log("nulllllllXXXXXXX");
-              mapDataOrder1 = result.map((result) => {
-                return {
-                  name: result.name + "  " + result.surname
-                }
-              })
-            }
-            orderDep2(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser, mapDataOrder1)
-
-          })
-        }
-      })
-    }
-    // end หาผู้อนุมัติ 1
-    // หาผู้อนุมัติ์ 2
-    function orderDep2(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser, mapDataOrder1) {
-      //console.log(mapDataUser);
+//     // หาวันลาของตนเอง
+//     function findSickMe(numCount, dataObj, objTotalSick, objTotalLeave, meData) {
 
 
-      let validUser = mapDataUser[0].idUser
-      // console.log("validUser = " + validUser);
-      let sql = sqlShowOrder
-      connl.query(sql, [validUser], (err, result) => {
-        if (err) throw console.log(err)
-        //console.log(result);
-        let sql2 = sqlIndexUser
-        let valOrder2 = result[0].order_2
-        // console.log("valOrder1 = " + valOrder2);
+//       // let objTotalLeaveMe = []
+//       let idChkUser = req.cookies['idUser']
+//       //console.log("idChkUser = " + idChkUser);
 
-        conn.query(sql2, [valOrder2], (err, result) => {
-          if (err) throw console.log(err)
-          //console.log(result)
-          //orderDep2(mapDataUser, result)
-          let mapDataOrder2 = []
-          if (result == "") {
-            mapDataOrder2.push({
-              name: "-"
-            })
-          } else {
-            mapDataOrder2 = result.map((result) => {
-              return {
-                //name: result.name + "  " + result.surname
-                name: result.name
-              }
-            })
-          }
+//       let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l < 10 AND STATUS = 3 AND myId = ?"
+//       connl.query(sql, [idChkUser], (err, result) => {
+//         if (err) throw console.log(err)
+//         //console.log(result);
+//         //res.send(result)
+//         if (result[0].totalUnitDate == null) {
+//           result[0].totalUnitDate = 0
+//         }
+//         findLeaveMe(numCount, dataObj, objTotalSick, objTotalLeave, meData, result)
+//       })
+//     }
 
-          //listLeave(numCount, dataObj, objTotalSick, objTotalLeave, mapDataUser, mapDataOrder1, mapDataOrder2)
-          sendData(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser, mapDataOrder1, mapDataOrder2)
-
-        })
-      })
-    }
-    // end หาผู้อนุมัต 2
-
-    function sendData(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, dataUser, dataOrder1, dataOrder2) {
-      // console.log("TEST");
-
-      // console.log(objTotalLeave);
-      //console.log(meSickData);
-      //res.end()
-
-      //console.log("funtion Sendata");
-      //console.log("totalUnitDateSick = " + totalUnitDateSick[0].totalUnitDate);
-      //console.log(totalUnitDateSick);
-      //console.log(meData);
-
-      // วันป่วยรวม
-      let mDataTotalSick = totalUnitDateSick.map((totalUnitDateSick) => {
-        let dataSick = totalUnitDateSick[0].totalUnitDate
-        if (dataSick == null) {
-          dataSick = 0
-        }
-        return {
-          totalUnitDateSick: dataSick
-        }
-      })
-      // จบวันป่วยรวม
-      // รวมวันลากิจ
-      let mDataTotalLeave = objTotalLeave.map((objTotalLeave) => {
-        let dataLeave = objTotalLeave[0].totalUnitDate
-        if (dataLeave == null) {
-          dataLeave = 0
-        }
-        return {
-          totalUnitDateLeave: dataLeave
-        }
-      })
-      // จบรวมวันลากิจ
+//     function findLeaveMe(numCount, dataObj, objTotalSick, objTotalLeave, meData, meSickData) { // ลากิจ
+//       let idChkUser = req.cookies['idUser']
+//       //console.log("idChkUser = " + idChkUser);
 
 
-      let mDataAllUser = dataAllUser.map((dataAllUser) => {
-        return {
-          name: dataAllUser[0].name + " " + dataAllUser[0].surname,
-          id_user: dataAllUser[0].id_user
-        }
-      })
+//       let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l = 10 AND status = 3 AND myId = ?"
+//       connl.query(sql, [idChkUser], (err, result) => {
+//         if (err) throw console.log(err)
+//         //console.log(result);
+//         if (result[0].totalUnitDate == null) {
+//           result[0].totalUnitDate = 0
+//         }
+//         findLeaveMeCut(numCount, dataObj, objTotalSick, objTotalLeave, meData, meSickData, result) // หาวันขาดงาน ของตนเอง
+//         //listLeave(numCount, dataObj, objTotalSick, objTotalLeave, meData, meSickData, result)
+//       })
 
-      //console.log(meData);
+//     }
 
-      res.render('userOreder1', {
-        htmlTitle: "ใบลาออนไลน์",
-        mDataAllUser, // รามชื่อทั้งหมด - ใต้บังคับบัญชา 1
-        mDataTotalSick, // รวมวันป่วย
-        mDataTotalLeave, // รวมวันลากิจ
-        meData, // ข้อมูลตัวเอง 
-        meSickData, // วันลากิจของตัวเอง
-        meLeaveData, // วันลากิจของตัวเอง
-        dataListLeave,
-        dataUser,
-        dataOrder1,
-        dataOrder2
-      })
-    }
-    main()
-  }
+//     function findLeaveMeCut(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData) {
+//       let sql = "SELECT SUM(unit_date) AS totalUnitDate FROM leavedata WHERE type_l = 20 AND status = 3 AND myId = ? "
+//       let idChkUser = req.cookies['idUser']
+//       connl.query(sql, [idChkUser], (err, result) => {
+//         listLeave(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData)
+//       })
+//     }
 
-})
+
+//     // end วันลาของตนเอง
+
+//     // data วันลา
+
+//     function listLeave(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData) {
+//       let sql = sqlListIndex
+//       let idUser = req.cookies["idUser"]
+//       connl.query(sql, [idUser], (err, result) => {
+//         if (err) throw console.log(err)
+//         // console.log(result);
+//         let totalSick = 0
+//         let totalLeave = 0
+//         let totalCut = 0
+//         let dataListLeave = result.map((result) => {
+//           let = mDateCreate = result.date_create
+//           let = mDateStart = result.date_start
+//           let = mDateEnd = result.date_end
+//           let = mType = result.type_l
+//           if (mType == 10) {
+//             mUnitDate = '-'
+//             mUnitDate2 = result.unit_date
+//             mUnitDate3 = '-'
+//             totalLeave += result.unit_date
+//           } else if (mType != 99) {
+//             mUnitDate = result.unit_date
+//             mUnitDate2 = '-'
+//             mUnitDate3 = '-'
+//             totalSick += result.unit_date
+//           }
+
+//           return {
+//             leaveId: result.id,
+//             myId: result.myId,
+//             dateCreate: moment(mDateCreate).format('YYYY-MM-DD'),
+//             dateStart: moment(mDateStart).format('YYYY-MM-DD'),
+//             dateEnd: moment(mDateEnd).format('YYYY-MM-DD'),
+//             unitDate: mUnitDate,
+//             unitDate2: mUnitDate2,
+//             unitDate3: mUnitDate3,
+//             cause: result.cause,
+//             status: result.status,
+//             totalSick,
+//             totalLeave
+//           }
+//         })
+//         userIndex(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave)
+//       })
+//     }
+//     // end data วันลา
+
+//     // user Data Index
+//     function userIndex(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave) {
+//       // ขอเช็ค IdUser ก่อน ว่าเป็นผู้อนุมัติหรือไม่
+
+//       // END ขอเช็ค IdUser ก่อน ว่าเป็นผู้อนุมัติหรือไม่      
+//       let sql = sqlIndexUserStar
+//       let idUser = req.cookies["idUser"]
+//       conn.query(sql, [idUser], (err, result) => {
+//         if (err) throw console.log(err)
+//         //console.log(result)
+//         let mapDataUser = result.map((result) => {
+//           let dataResult = result
+//           let dataAddno = ""
+//           let dataMoo = ""
+//           let dataVellage = ""
+//           let dataRoad = ""
+//           let dataNametambon = ""
+//           let dataNameAmpur = ""
+//           let dataNameProvi = ""
+//           /* address */
+//           if (dataResult.addno == '-') {
+//             dataAddno = ""
+//           } else {
+//             dataAddno = dataResult.addno
+//           }
+//           // -------
+//           if (dataResult.moo == '-') {
+//             dataMoo = ""
+//           } else {
+//             dataMoo = dataResult.moo
+//           }
+//           // -------
+//           if (dataResult.vellage == '-') {
+//             dataVellage = ""
+//           } else {
+//             dataMoo = dataResult.vellage
+//           }
+//           // --------
+//           if (dataResult.road == '-') {
+//             dataRoad = ""
+//           } else {
+//             dataRoad = dataResult.road
+//           }
+//           if (dataResult.nametambon == "-") {
+//             dataNametambon = ""
+//           } else {
+//             dataNametambon = dataResult.nametambon
+//           }
+//           //  ---------
+//           if (dataResult.nameAmpur == "-") {
+//             dataNameAmpur = ""
+//           } else {
+//             dataNameAmpur = dataResult.nameAmpur
+//           }
+//           //  ---------
+//           if (dataResult.nameProvi == "-") {
+//             dataNameProvi = ""
+//           } else {
+//             dataNameProvi = dataResult.nameProvi
+//           }
+
+//           // --------
+//           /* end address */
+
+//           return {
+//             nickname: dataResult.fistname,
+//             fistname: dataResult.fistname + " " + dataResult.surname,
+//             address: dataAddno + " " + dataMoo + " " + dataVellage + " " + dataRoad + " " + dataNametambon + " " + dataNameAmpur + " " + dataNameProvi,
+//             username: dataResult.username_user,
+//             namedp: dataResult.namedp,
+//             tel: dataResult.tel,
+//             idUser: dataResult.id_user
+
+//           }
+//         })
+//         orderDep(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser)
+//       })
+//     }
+//     // end user Data Index
+
+//     // หาผู้อนุมัติ 1
+//     function orderDep(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser) {
+//       //console.log(mapDataUser);
+//       let validUser = mapDataUser[0].idUser
+//       // console.log("validUser = " + validUser);
+//       let sql = sqlShowOrder
+//       connl.query(sql, [validUser], (err, result) => {
+//         if (result == "") {
+//           res.send("No data โปรดติดต่อ Admin 002")
+//         } else {
+//           if (err) throw console.log(err)
+//           //console.log(result);
+//           let sql2 = sqlIndexUser
+//           let valOrder1 = result[0].order_1
+//           // console.log("valOrder1 = " + valOrder1);
+
+//           conn.query(sql2, [valOrder1], (err, result) => {
+//             if (err) throw console.log(err)
+//             //console.log(result)
+//             //orderDep2(mapDataUser, result)
+//             let mapDataOrder1 = []
+//             if (result == "") {
+//               //console.log("nulllllll");
+//               mapDataOrder1.push({
+//                 name: "-"
+//               })
+//             } else {
+//               //console.log("nulllllllXXXXXXX");
+//               mapDataOrder1 = result.map((result) => {
+//                 return {
+//                   name: result.name + "  " + result.surname
+//                 }
+//               })
+//             }
+//             orderDep2(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser, mapDataOrder1)
+
+//           })
+//         }
+//       })
+//     }
+//     // end หาผู้อนุมัติ 1
+//     // หาผู้อนุมัติ์ 2
+//     function orderDep2(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser, mapDataOrder1) {
+//       //console.log(mapDataUser);
+
+
+//       let validUser = mapDataUser[0].idUser
+//       // console.log("validUser = " + validUser);
+//       let sql = sqlShowOrder
+//       connl.query(sql, [validUser], (err, result) => {
+//         if (err) throw console.log(err)
+//         //console.log(result);
+//         let sql2 = sqlIndexUser
+//         let valOrder2 = result[0].order_2
+//         // console.log("valOrder1 = " + valOrder2);
+
+//         conn.query(sql2, [valOrder2], (err, result) => {
+//           if (err) throw console.log(err)
+//           //console.log(result)
+//           //orderDep2(mapDataUser, result)
+//           let mapDataOrder2 = []
+//           if (result == "") {
+//             mapDataOrder2.push({
+//               name: "-"
+//             })
+//           } else {
+//             mapDataOrder2 = result.map((result) => {
+//               return {
+//                 //name: result.name + "  " + result.surname
+//                 name: result.name
+//               }
+//             })
+//           }
+
+//           //listLeave(numCount, dataObj, objTotalSick, objTotalLeave, mapDataUser, mapDataOrder1, mapDataOrder2)
+//           sendData(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, mapDataUser, mapDataOrder1, mapDataOrder2)
+
+//         })
+//       })
+//     }
+//     // end หาผู้อนุมัต 2
+
+//     function sendData(numCount, dataAllUser, totalUnitDateSick, objTotalLeave, meData, meSickData, meLeaveData, dataListLeave, dataUser, dataOrder1, dataOrder2) {
+//       // console.log("TEST");
+
+//       // console.log(objTotalLeave);
+//       //console.log(meSickData);
+//       //res.end()
+
+//       //console.log("funtion Sendata");
+//       //console.log("totalUnitDateSick = " + totalUnitDateSick[0].totalUnitDate);
+//       //console.log(totalUnitDateSick);
+//       //console.log(meData);
+
+//       // วันป่วยรวม
+//       let mDataTotalSick = totalUnitDateSick.map((totalUnitDateSick) => {
+//         let dataSick = totalUnitDateSick[0].totalUnitDate
+//         if (dataSick == null) {
+//           dataSick = 0
+//         }
+//         return {
+//           totalUnitDateSick: dataSick
+//         }
+//       })
+//       // จบวันป่วยรวม
+//       // รวมวันลากิจ
+//       let mDataTotalLeave = objTotalLeave.map((objTotalLeave) => {
+//         let dataLeave = objTotalLeave[0].totalUnitDate
+//         if (dataLeave == null) {
+//           dataLeave = 0
+//         }
+//         return {
+//           totalUnitDateLeave: dataLeave
+//         }
+//       })
+//       // จบรวมวันลากิจ
+
+
+//       let mDataAllUser = dataAllUser.map((dataAllUser) => {
+//         return {
+//           name: dataAllUser[0].name + " " + dataAllUser[0].surname,
+//           id_user: dataAllUser[0].id_user
+//         }
+//       })
+
+//       //console.log(meData);
+
+//       res.render('userOreder1', {
+//         htmlTitle: "ใบลาออนไลน์",
+//         mDataAllUser, // รามชื่อทั้งหมด - ใต้บังคับบัญชา 1
+//         mDataTotalSick, // รวมวันป่วย
+//         mDataTotalLeave, // รวมวันลากิจ
+//         meData, // ข้อมูลตัวเอง 
+//         meSickData, // วันลากิจของตัวเอง
+//         meLeaveData, // วันลากิจของตัวเอง
+//         dataListLeave,
+//         dataUser,
+//         dataOrder1,
+//         dataOrder2
+//       })
+//     }
+//     main()
+//   }
+
+// })
 
 
 router.get('/userOrder1/:id', (req, res) => { // ผ่านมาจาก Order_1
+
+  console.log("userOrder1");
+
 
   let arrLeaveMeCut = []
   let arrLeaveListCut = [] // วันขาดงาน
@@ -1672,7 +1753,7 @@ router.get('/userOrder1/:id', (req, res) => { // ผ่านมาจาก Ord
       let sql = "SELECT SUM(unit_date) as totalUnitDate FROM leavedata WHERE type_l = 10 AND status = 3 AND myId = ?"
       connl.query(sql, [idChkUser], (err, result) => {
         if (err) throw console.log(err)
-        //console.log(result);
+        // console.log(result);
         if (result[0].totalUnitDate == null) {
           result[0].totalUnitDate = 0
         }
@@ -1797,7 +1878,7 @@ router.get('/userOrder1/:id', (req, res) => { // ผ่านมาจาก Ord
             if (result != "") { // เจอข้อมูลใน order_1
               // console.log(result);
               //res.end()
-              res.redirect('../manager') // เจอข้อมูลใน order_1 แต่ไม่เจอ myId
+              res.redirect('../manager/0') // เจอข้อมูลใน order_1 แต่ไม่เจอ myId
             } else {
               res.send("No data โปรดติดต่อ Admin 003")
             }
@@ -2072,9 +2153,16 @@ router.get('/userOrder1/:id', (req, res) => { // ผ่านมาจาก Ord
         return {
           id: item.idData,
           indexType: item.type_l,
-          unitDate: item.unit_date
+          unitDate: item.unit_date,
+          dateStart: moment(item.date_start).format('DD-MM-YYYY'),
+          dateEnd: moment(item.date_end).format('DD-MM-YYYY'),
+          dateCreate: moment(item.date_create).format('DD-MM-YYYY'),
+          cause: item.cause
         }
       })
+
+      // console.log(mDetailLeave);
+
       // end รายละเอียดการลา
 
       // ผู้ขอลาป่วย
@@ -2137,7 +2225,7 @@ router.get('/userOrder1/:id', (req, res) => { // ผ่านมาจาก Ord
       }
       // console.log(dataOrder1);
       // console.log("test");
-      // console.log(arrLeaveListCut);
+      console.log(arrLeaveListCut);
       // map
       let totalDate = 0
       let mLeaveLeaveListCut = arrLeaveListCut.map(item => {
@@ -2152,6 +2240,7 @@ router.get('/userOrder1/:id', (req, res) => { // ผ่านมาจาก Ord
         }
       })
       // console.log(mLeaveLeaveListCut[0]);
+      console.log(arrLeaveMeCut);
       // end map
       // console.log(dataListLeave);
       res.render('userOrederDetail', {
@@ -2250,7 +2339,7 @@ router.post('/addLeave', (req, res) => {
     connl.query(sqlChk, [valMyId], (err, resultChk) => {
 
 
-      if (resultChk[0].order_2 == 0) {
+      if (resultChk[0].order_2 == 0) { // ถ้า order_2 = 0 ระดับหัวหน้า
         let sql = sqlAddLeave
         connl.query(sql, [valMyId, dateNow, valStartDate, valDateUnit, valEndDate, valType, valComment, 1], (err, result) => {
           if (err) throw console.log(err)
@@ -2418,7 +2507,8 @@ router.get('/approveIndex/:id/:idUser', (req, res) => {
   })
 })
 // END อนุมัติรายบุคคล
-// ไม่อนุมัติ รายบุคคล
+
+// ไม่อนุมัติ รายบุคคล 
 router.get('/notApproveIndex/:id/:idUser', (req, res) => {
   async function main() {
     let id = req.params.id
@@ -2426,32 +2516,44 @@ router.get('/notApproveIndex/:id/:idUser', (req, res) => {
     // console.log("id = " + id);
     // console.log("idUser = " + idUser);
 
-    // ตรวจสอบประเภทการลากิจ
-
+    // ตรวจสอบประเภทการลากิจ หรือ ไม่
     let sql = ""
-
     let chkSql = "SELECT type_l FROM leavedata WHERE id = ?"
     connl.query(chkSql, [id], (err, resChk) => {
       if (err) throw console.log(err);
-      // console.log("DATA = " + resChk[0].type_l);
-      if (resChk[0].type_l == 10) {
-        sql = sqlDelApprove
-        connl.query(sql, [id], (err, result) => {
-          if (err) throw console.log(err);
-          res.redirect('../../userOrder1/' + idUser)
+
+      if (resChk[0].type_l == 10) { // เป็นประเภทลากิจ
+        // ต้องตรวจสอบวันปัจจุบันก่อน
+        let dateNow = moment().format('YYYY-MM-DD');
+        console.log(dateNow);
+
+        let sqlChkDateLevae = "SELECT * FROM`leavedata` WHERE id = ? And date_start > ?"
+        connl.query(sqlChkDateLevae, [id, dateNow], (err, resChkDate) => {
+          console.log(resChkDate);
+          if (resChkDate != "") { // ถ้ามีให้ลบออก
+            sql = sqlDelApprove // ทำการลบออก
+            connl.query(sql, [id], (err, result) => {
+              if (err) throw console.log(err);
+              res.redirect('../../userOrder1/' + idUser)
+            })
+          } else { // ถ้าเลยมาแล้วให้ ขาดงาน
+            sql = sqlNotApproveAll // update ขาดงาน
+            connl.query(sql, [id], (err, result) => {
+              if (err) throw console.log(err);
+              res.redirect('../../userOrder1/' + idUser)
+            })
+          }
+
         })
       } else {
-        sql = sqlNotApproveAll
+        sql = sqlNotApproveAll // updata ขาดงาน
         connl.query(sql, [id], (err, result) => {
           if (err) throw console.log(err);
           res.redirect('../../userOrder1/' + idUser)
         })
       }
     })
-
     // END ตรวจสอบประเภทการลากิจ
-
-
   }
   let cookieId = req.cookies["idUser"]
   if (cookieId == undefined) {
@@ -2461,6 +2563,7 @@ router.get('/notApproveIndex/:id/:idUser', (req, res) => {
   }
 })
 // END ไม่อนุมัติ รายบุคคล
+
 
 
 
@@ -2498,415 +2601,422 @@ router.get('/testlike/:name', (req, res) => {
 })
 
 // ผู้บริหาร order_1
-router.get('/manager', (req, res) => {
-
-
-  let cookieId = req.cookies["idUser"]
-  if (cookieId == undefined) {
-    res.redirect('../login')
-  } else {
-    console.log("test001");
-    main()
-  }
-
-  console.log("cookieId = " + cookieId); // บันทึก Cookie
-  let arrStarf = []
-  let nameStarf = [] // พนักงานทั้งหมดในใตับังคับ
-  let dpStarf = [] // แผนกทั้งหมดภายใต้บังคับ
-  let dataLeave2 = [] // รวมการลา แยกเป็นบุคคล หลังจากเรียงแล้ว
-  let mapDataLeave = [] // รวมการลา แยกเป็นบุคคล หลังจากเรียงแล้ว
-  let mapStarf2 = [] // พนักงานทั้งหมดในใตับังคับ map แล้ว
-  let mapStarfLeave = [] // พนักงานผู้ขอลา
-  let mapStarfLeaveName = [] // ชื่อพนักงานผู้ขอลา
-  let dataAllLeave = [] // การขอลา
-  let dataArrAllLeave = [] // Arr การขอลาทั้งหมด ของบุคคล รับการ push จาก Database
-  let mapTotalLeave = [] // map Total Leave ก่อนส่ง
-  async function main() {
-
-    await fnCountStart()
-  }
-
-  function fnCountStart() {
-
-
-    let sqlCountStarf = "SELECT COUNT(*) AS countS FROM leaveorder WHERE order_1 = ? OR order_2 = ?"
-    // console.log(sqlCountStarf);
-
-    connl.query(sqlCountStarf, [cookieId, cookieId], (err, dataConutStarf) => {
-      // console.log(dataConutStarf);
-      let conutStarf = dataConutStarf[0].countS
-      fnDataStarf(conutStarf)
-    })
-
-  }
-
-  function fnDataStarf(conutStarf) {
-
-
-    let sql = "SELECT * FROM leaveorder WHERE order_1 = ? OR order_2 = ?"
-    // console.log(sql);
-
-    connl.query(sql, [cookieId, cookieId], (err, dataIdStarf) => {
-      // console.log(conutStarf);
-      // console.log(dataIdStarf);
-      fnListNameStart(conutStarf, dataIdStarf)
-
-    })
-  }
-
-  function fnListNameStart(conutStarf, dataIdStarf) { // หาพนักงานภายใต้บังคับ
-
-    let sql = sqlFindUserForId_user
-    // console.log(sql);
-
-    // console.log(sql);
-    // console.log(dataIdStarf.length);
-    // console.log(dataIdStarf[0].myId);
-    // res.end()
-    for (let i = 0; i < dataIdStarf.length; i++) {
-
-      // sid = dataIdStarf[i].myId
-      conn.query(sql, [dataIdStarf[i].myId], (err, result) => {
-        // console.log(result);
-        pushData = {
-          idUser: result[0].id_user,
-          name: result[0].name,
-          id_dp: result[0].id_dp,
-          namedp: result[0].namedp,
-          surname: result[0].surname
-        }
-        nameStarf.push(pushData)
-        if (i == (dataIdStarf.length - 1)) {
-
-          fnDetailStarfLeaveTotal()
-        }
-      })
-    }
-  }
-
-
-
-  function fnDetailStarfLeaveTotal() { // data การลาทั้งหมด
-    let sql = "SELECT * FROM leavedata WHERE myId = ?"
-
-    for (let i = 0; i < nameStarf.length; i++) {
-      connl.query(sql, [nameStarf[i].idUser], (err, result) => {
-        // console.log(result);
-        if (i == (nameStarf.length - 1)) {
-          fnDp()
-        }
-      })
-    }
-  }
-
-  function fnDp() {
-
-    function groupBy(list, keyGetter) {
-      const map = new Map();
-      list.forEach((item) => {
-        const key = keyGetter(item);
-        const collection = map.get(key);
-        if (!collection) {
-          map.set(key, [item]);
-        } else {
-          collection.push(item);
-        }
-      });
-      return map;
-    }
-    let grouped = groupBy(nameStarf, item => item.id_dp);
-    // console.log(grouped);
-    sendData()
-
-  }
-
-  function sendData() {
-    async function main() {
-      await subfn()
-      //await lastData()
-    }
-
-    function subfn() {
-
-      let snameStarf = nameStarf.slice(0); // จัดเรียง
-      snameStarf.sort(function (a, b) {
-        // return ((a.idUser - b.idUser), (a.id_dp - b.id_dp))
-        return ((a.id_dp - b.id_dp))
-      });
-      sendSubData(snameStarf)
-    }
-
-    function sendSubData(snameStarf) {
-      let mapStarf = snameStarf.map(item => {
-        return {
-          idUser: item.idUser,
-          name: item.name + "  " + item.surname,
-          id_dp: item.id_dp,
-          namedp: item.namedp
-        }
-      })
-      mapStarf2 = mapStarf
-      chkTotalLeave(mapStarf)
-
-      // lastData(mapStarf)
-      //console.log(mapStarf); // ใช้อันนี้ เพื่อไปต่อ
-    }
-
-    // check ค่ารวม การลาทั้งหมด // manager/
-    function chkTotalLeave(mapStarf) {
-      // let sql = "SELECT * FROM leavedata WHERE myId = ? and `status` <> 0"
-      let sql = "SELECT * FROM leavedata WHERE myId = ? and status = 3"
-
-
-      // console.log(mapStarf[4].idUser);
-
-      for (let i = 0; i < mapStarf.length; i++) {
-        connl.query(sql, [mapStarf[i].idUser], (err, dataDetailLeave) => {
-          // console.log(dataDetailLeave);
-          dataLeave2.push(dataDetailLeave)
-          if (i == (mapStarf.length - 1)) {
-            // lastData(mapStarf)
-            // console.log(dataLeave2);
-            chkTotalLeave2()
-          }
-        })
-      }
-      // lastData(mapStarf)
-    }
-    // end
-    function chkTotalLeave2() {
-
-
-      let d_idUser = ""
-      let d_unitSick = 0 // ลาป่วย
-      let d_unitLeave = 0 // ลากิจ
-      let d_unitAbs = 0 // ขาดงาน
-      for (let i = 0; i < mapStarf2.length; i++) {
-        d_idUser = ""
-        d_unitSick = 0
-        d_unitLeave = 0
-        d_unitAbs = 0
-        for (let ii = 0; ii < dataLeave2[i].length; ii++) {
-          // console.log(dataLeave2[i][ii].myId);
-          if (dataLeave2[i][ii].myId == mapStarf2[i].idUser) {
-            d_idUser = dataLeave2[i][ii].myId
-
-            // พนักงานทั้งหมด
-            if (dataLeave2[i][ii].type_l < 10) {
-              // console.log(parseFloat(dataLeave2[i][ii].unit_date));
-              d_unitSick += parseFloat(dataLeave2[i][ii].unit_date)
-            } else if (dataLeave2[i][ii].type_l == 10) {
-              d_unitLeave += parseFloat(dataLeave2[i][ii].unit_date)
-            } else if (dataLeave2[i][ii].type_l == 20) {
-              d_unitAbs += parseFloat(dataLeave2[i][ii].unit_date)
-            }
-
-          }
-
-        }
-        let demonData = {
-          idUser: d_idUser,
-          unitSick: d_unitSick,
-          unitLeave: d_unitLeave,
-          unitAbs: d_unitAbs
-        }
-        mapDataLeave.push(demonData)
-
-        if (i == (mapStarf2.length - 1)) {
-          // console.log(mapDataLeave);
-          lastData()
-
-        }
-        //   lastData()
-      }
-    }
-    // console.log(snameStarf);
-    function lastData() {
-
-      // console.log(dataLeave2);
-      // console.log(mapStarf2);
-
-      // หาคนขอลา
-
-      main()
-      async function main() {
-
-        await findIdPer()
-      }
-      // end หาคนขอลา
-
-      function findIdPer() {
-        let sql = "SELECT * FROM leavedata "
-        sql += "INNER JOIN leave_type ON leavedata.type_l = leave_type.id "
-        sql += "INNER JOIN leaveorder ON leavedata.myId = leaveorder.myId "
-        sql += "WHERE (leaveorder.order_1 = ? OR leaveorder.order_2 = ?) AND leavedata.`status` = 1 "
-        //sql += "ORDER BY date_create "
-        sql += "GROUP BY leavedata.myId"
-        console.log(sql);
-
-        //console.log(sql);
-
-
-        connl.query(sql, [cookieId, cookieId], (err, resIdPer) => {
-          // console.log(resIdPer);
-          mapStarfLeave = resIdPer
-          // res.send(sql)
-          // res.send(mapStarfLeave)
-          if (resIdPer == "") {
-            // res.end()
-            noDataArr()
-          } else {
-            findNameLeave()
-          }
-
-        })
-
-      }
-
-      // หาชื่อคนลา
-      function findNameLeave() {
-        let sql = sqlIndexUser
-        for (let i = 0; i < mapStarfLeave.length; i++) {
-          conn.query(sql, [mapStarfLeave[i].myId], (err, resNammStarf) => {
-            // res.send(resNammStarf)
-            mapStarfLeaveName.push(resNammStarf)
-            if (i == (mapStarfLeave.length - 1)) {
-              fnMapTotalLeave()
-            }
-          })
-        }
-      }
-
-      // mapTotalLeave
-      // หาการลาทั้งหมด
-      function fnMapTotalLeave() {
-        let sql = "SELECT *,leavedata.status As dataStatus FROM leavedata "
-        sql += "INNER JOIN leave_type ON leavedata.type_l = leave_type.id "
-        sql += "INNER JOIN leaveorder ON leavedata.myId = leaveorder.myId "
-        sql += "WHERE (leaveorder.order_1 = ? OR leaveorder.order_2 = ?) AND leavedata.`status` = 1 "
-
-        // sql += "WHERE (leaveorder.order_1 = ? OR leaveorder.order_2 = ?) AND (leavedata.`status` = 1 OR leavedata.`status` = 8)"
-
-        // console.log(mapStarfLeaveName[1][0]); // ใช้ได้
-        // console.log(mapStarfLeaveName.length); // ใช้ได้
-        // console.log(resAllLeave[0].myId); // ใช้ได้
-        // console.log("cookieId = " + cookieId);
-        connl.query(sql, [cookieId, cookieId], (err, resAllLeave) => {
-
-          if (resAllLeave == "") {
-            noDataArr()
-          }
-          // console.log(resAllLeave.length);
-          // console.log(resAllLeave[0]);
-          for (let i = 0; i < resAllLeave.length; i++) {
-            dataArrAllLeave.push(resAllLeave[i])
-            if (i == (resAllLeave.length - 1)) { // เมื่อ push ข้อมูลจนครบแล้ว
-
-              mapDataAllLeave()
-            }
-          }
-        })
-      }
-
-
-      function noDataArr() {
-        mapStarfLeaveName = {
-          id: 0,
-          myId: 0,
-          date_create: "",
-          date_start: "",
-          unit_date: "",
-          date_end: "",
-          type_l: 0,
-          cause: '',
-          status: "",
-          workerId: '',
-          name_type: '',
-          order_1: 0,
-          order_2: 0,
-          order_3: 0,
-          order_4: 0,
-          order_5: 0,
-          order_6: 0,
-          order_7: 0
-        }
-        demonDataLeave = {
-          idUser: 0,
-          leave: 0,
-          sick: 0
-        }
-        mapTotalLeave.push(demonDataLeave)
-        fnRender()
-      }
-
-      function mapDataAllLeave() { // เอาบุคคลที่ลา มาคัดกับการลาทั้งหมด
-        console.log("ขอลา");
-
-        let l_idUser = ""
-        let l_leave = 0
-        let l_sick = 0
-        let l_cut = 0
-
-        for (let i = 0; i < mapStarfLeaveName.length; i++) {
-          l_idUser = ""
-          l_leave = 0
-          l_sick = 0
-          l_cut = 0
-
-          for (let x = 0; x < dataArrAllLeave.length; x++) {
-            if (mapStarfLeaveName[i][0].id_user == dataArrAllLeave[x].myId) {
-              l_idUser = dataArrAllLeave[x].myId
-              if (dataArrAllLeave[x].type_l < 10) {
-                // console.log(dataArrAllLeave[x].type_l)
-                //console.log("status = " + dataArrAllLeave[x].dataStatus);
-                l_sick += dataArrAllLeave[x].unit_date
-                // l_sick += dataArrAllLeave[x].unit_date
-              } else if (dataArrAllLeave[x].type_l == 10) {
-                console.log("ลากิจ");
-                l_leave += dataArrAllLeave[x].unit_date
-                console.log(l_leave);
-
-                // l_leave += 9
-
-              } else if (dataArrAllLeave[x].type_l == 20) {
-
-                l_cut += dataArrAllLeave[x].unit_date
-
-              }
-            }
-          }
-          demonDataLeave = {
-            idUser: l_idUser,
-            leave: l_leave,
-            sick: l_sick,
-            lcut: l_cut
-          }
-          mapTotalLeave.push(demonDataLeave)
-
-        }
-        fnRender()
-
-      }
-
-      function fnRender() {
-        console.log("***+++-----");
-        console.log(mapTotalLeave);
-        console.log("***+++-----");
-        // console.log(dataAllLeave);
-        res.render('managerOrderDetail', {
-          htmlTitle: "manager",
-          dataStarf: mapStarf2, // รายชื่อ
-          dataLeaveTotal: mapDataLeave, // รวมลาป่วย
-          dataStarfLeave: mapStarfLeave,
-          dataStarfLeaveName: mapStarfLeaveName,
-          mapTotalLeave
-        })
-      }
-    }
-
-    main()
-  }
-})
+// router.get('/manager', (req, res) => {
+
+
+
+//   let cookieId = req.cookies["idUser"]
+//   if (cookieId == undefined) {
+//     res.redirect('../login')
+//   } else {
+//     console.log("test001");
+//     main()
+//   }
+
+//   console.log("cookieId = " + cookieId); // บันทึก Cookie
+//   let arrStarf = []
+//   let nameStarf = [] // พนักงานทั้งหมดในใตับังคับ
+//   let dpStarf = [] // แผนกทั้งหมดภายใต้บังคับ
+//   let dataLeave2 = [] // รวมการลา แยกเป็นบุคคล หลังจากเรียงแล้ว
+//   let mapDataLeave = [] // รวมการลา แยกเป็นบุคคล หลังจากเรียงแล้ว
+//   let mapStarf2 = [] // พนักงานทั้งหมดในใตับังคับ map แล้ว
+//   let mapStarfLeave = [] // พนักงานผู้ขอลา
+//   let mapStarfLeaveName = [] // ชื่อพนักงานผู้ขอลา
+//   let dataAllLeave = [] // การขอลา
+//   let dataArrAllLeave = [] // Arr การขอลาทั้งหมด ของบุคคล รับการ push จาก Database
+//   let mapTotalLeave = [] // map Total Leave ก่อนส่ง
+//   //
+
+//   //new
+//   let allLeaveByStarf = []
+
+//   async function main() {
+
+//     await fnCountStart()
+//   }
+
+//   function fnCountStart() {
+
+
+//     let sqlCountStarf = "SELECT COUNT(*) AS countS FROM leaveorder WHERE order_1 = ? OR order_2 = ?"
+//     // console.log(sqlCountStarf);
+
+//     connl.query(sqlCountStarf, [cookieId, cookieId], (err, dataConutStarf) => {
+//       // console.log(dataConutStarf);
+//       let conutStarf = dataConutStarf[0].countS
+//       fnDataStarf(conutStarf)
+//     })
+
+//   }
+
+//   function fnDataStarf(conutStarf) {
+
+
+//     let sql = "SELECT * FROM leaveorder WHERE order_1 = ? OR order_2 = ?"
+//     // console.log(sql);
+
+//     connl.query(sql, [cookieId, cookieId], (err, dataIdStarf) => {
+//       // console.log(conutStarf);
+//       // console.log(dataIdStarf);
+//       fnListNameStart(conutStarf, dataIdStarf)
+
+//     })
+//   }
+
+//   function fnListNameStart(conutStarf, dataIdStarf) { // หาพนักงานภายใต้บังคับ
+
+//     let sql = sqlFindUserForId_user
+//     // console.log(sql);
+
+//     // console.log(sql);
+//     // console.log(dataIdStarf.length);
+//     // console.log(dataIdStarf[0].myId);
+//     // res.end()
+//     for (let i = 0; i < dataIdStarf.length; i++) {
+
+//       // sid = dataIdStarf[i].myId
+//       conn.query(sql, [dataIdStarf[i].myId], (err, result) => {
+//         // console.log(result);
+//         pushData = {
+//           idUser: result[0].id_user,
+//           name: result[0].name,
+//           id_dp: result[0].id_dp,
+//           namedp: result[0].namedp,
+//           surname: result[0].surname
+//         }
+//         nameStarf.push(pushData)
+//         if (i == (dataIdStarf.length - 1)) {
+
+//           fnDetailStarfLeaveTotal()
+//         }
+//       })
+//     }
+//   }
+
+
+
+//   function fnDetailStarfLeaveTotal() { // data การลาทั้งหมด
+//     let sql = "SELECT * FROM leavedata WHERE myId = ?"
+
+//     for (let i = 0; i < nameStarf.length; i++) {
+//       connl.query(sql, [nameStarf[i].idUser], (err, result) => {
+//         // console.log(result);
+//         if (i == (nameStarf.length - 1)) {
+//           fnDp()
+//         }
+//       })
+//     }
+//   }
+
+//   function fnDp() {
+
+//     function groupBy(list, keyGetter) {
+//       const map = new Map();
+//       list.forEach((item) => {
+//         const key = keyGetter(item);
+//         const collection = map.get(key);
+//         if (!collection) {
+//           map.set(key, [item]);
+//         } else {
+//           collection.push(item);
+//         }
+//       });
+//       return map;
+//     }
+//     let grouped = groupBy(nameStarf, item => item.id_dp);
+//     // console.log(grouped);
+//     sendData()
+
+//   }
+
+//   function sendData() {
+//     async function main() {
+//       await subfn()
+//       //await lastData()
+//     }
+
+//     function subfn() {
+
+//       let snameStarf = nameStarf.slice(0); // จัดเรียง
+//       snameStarf.sort(function (a, b) {
+//         // return ((a.idUser - b.idUser), (a.id_dp - b.id_dp))
+//         return ((a.id_dp - b.id_dp))
+//       });
+//       sendSubData(snameStarf)
+//     }
+
+//     function sendSubData(snameStarf) {
+//       let mapStarf = snameStarf.map(item => {
+//         return {
+//           idUser: item.idUser,
+//           name: item.name + "  " + item.surname,
+//           id_dp: item.id_dp,
+//           namedp: item.namedp
+//         }
+//       })
+//       mapStarf2 = mapStarf
+//       chkTotalLeave(mapStarf)
+
+//       // lastData(mapStarf)
+//       //console.log(mapStarf); // ใช้อันนี้ เพื่อไปต่อ
+//     }
+
+//     // check ค่ารวม การลาทั้งหมด // manager/
+//     function chkTotalLeave(mapStarf) {
+//       // let sql = "SELECT * FROM leavedata WHERE myId = ? and `status` <> 0"
+//       let sql = "SELECT * FROM leavedata WHERE myId = ? and status = 3"
+
+
+//       // console.log(mapStarf[4].idUser);
+
+//       for (let i = 0; i < mapStarf.length; i++) {
+//         connl.query(sql, [mapStarf[i].idUser], (err, dataDetailLeave) => {
+//           // console.log(dataDetailLeave);
+//           dataLeave2.push(dataDetailLeave)
+//           if (i == (mapStarf.length - 1)) {
+//             // lastData(mapStarf)
+//             // console.log(dataLeave2);
+//             chkTotalLeave2()
+//           }
+//         })
+//       }
+//       // lastData(mapStarf)
+//     }
+//     // end
+//     function chkTotalLeave2() {
+
+
+//       let d_idUser = ""
+//       let d_unitSick = 0 // ลาป่วย
+//       let d_unitLeave = 0 // ลากิจ
+//       let d_unitAbs = 0 // ขาดงาน
+//       for (let i = 0; i < mapStarf2.length; i++) {
+//         d_idUser = ""
+//         d_unitSick = 0
+//         d_unitLeave = 0
+//         d_unitAbs = 0
+//         for (let ii = 0; ii < dataLeave2[i].length; ii++) {
+//           // console.log(dataLeave2[i][ii].myId);
+//           if (dataLeave2[i][ii].myId == mapStarf2[i].idUser) {
+//             d_idUser = dataLeave2[i][ii].myId
+
+//             // พนักงานทั้งหมด
+//             if (dataLeave2[i][ii].type_l < 10) {
+//               // console.log(parseFloat(dataLeave2[i][ii].unit_date));
+//               d_unitSick += parseFloat(dataLeave2[i][ii].unit_date)
+//             } else if (dataLeave2[i][ii].type_l == 10) {
+//               d_unitLeave += parseFloat(dataLeave2[i][ii].unit_date)
+//             } else if (dataLeave2[i][ii].type_l == 20) {
+//               d_unitAbs += parseFloat(dataLeave2[i][ii].unit_date)
+//             }
+
+//           }
+
+//         }
+//         let demonData = {
+//           idUser: d_idUser,
+//           unitSick: d_unitSick,
+//           unitLeave: d_unitLeave,
+//           unitAbs: d_unitAbs
+//         }
+//         mapDataLeave.push(demonData)
+
+//         if (i == (mapStarf2.length - 1)) {
+//           // console.log(mapDataLeave);
+//           lastData()
+
+//         }
+//         //   lastData()
+//       }
+//     }
+//     // console.log(snameStarf);
+//     function lastData() {
+
+//       // console.log(dataLeave2);
+//       // console.log(mapStarf2);
+
+//       // หาคนขอลา
+
+//       main()
+//       async function main() {
+
+//         await findIdPer()
+//       }
+//       // end หาคนขอลา
+
+//       function findIdPer() {
+//         let sql = "SELECT * FROM leavedata "
+//         sql += "INNER JOIN leave_type ON leavedata.type_l = leave_type.id "
+//         sql += "INNER JOIN leaveorder ON leavedata.myId = leaveorder.myId "
+//         sql += "WHERE (leaveorder.order_1 = ? OR leaveorder.order_2 = ?) AND leavedata.`status` = 1 "
+//         //sql += "ORDER BY date_create "
+//         sql += "GROUP BY leavedata.myId"
+//         console.log(sql);
+
+//         //console.log(sql);
+
+
+//         connl.query(sql, [cookieId, cookieId], (err, resIdPer) => {
+//           // console.log(resIdPer);
+//           mapStarfLeave = resIdPer
+//           // res.send(sql)
+//           // res.send(mapStarfLeave)
+//           if (resIdPer == "") {
+//             // res.end()
+//             noDataArr()
+//           } else {
+//             findNameLeave()
+//           }
+
+//         })
+
+//       }
+
+//       // หาชื่อคนลา
+//       function findNameLeave() {
+//         let sql = sqlIndexUser
+//         for (let i = 0; i < mapStarfLeave.length; i++) {
+//           conn.query(sql, [mapStarfLeave[i].myId], (err, resNammStarf) => {
+//             // res.send(resNammStarf)
+//             mapStarfLeaveName.push(resNammStarf)
+//             if (i == (mapStarfLeave.length - 1)) {
+//               fnMapTotalLeave()
+//             }
+//           })
+//         }
+//       }
+
+//       // mapTotalLeave
+//       // หาการลาทั้งหมด
+//       function fnMapTotalLeave() {
+//         let sql = "SELECT *,leavedata.status As dataStatus FROM leavedata "
+//         sql += "INNER JOIN leave_type ON leavedata.type_l = leave_type.id "
+//         sql += "INNER JOIN leaveorder ON leavedata.myId = leaveorder.myId "
+//         sql += "WHERE (leaveorder.order_1 = ? OR leaveorder.order_2 = ?) AND leavedata.`status` = 1 "
+
+//         // sql += "WHERE (leaveorder.order_1 = ? OR leaveorder.order_2 = ?) AND (leavedata.`status` = 1 OR leavedata.`status` = 8)"
+
+//         // console.log(mapStarfLeaveName[1][0]); // ใช้ได้
+//         //console.log(mapStarfLeaveName.length); // ใช้ได้
+//         // console.log(resAllLeave[0].myId); // ใช้ได้
+//         // console.log("cookieId = " + cookieId);
+//         connl.query(sql, [cookieId, cookieId], (err, resAllLeave) => {
+//           console.log(resAllLeave);
+
+//           if (resAllLeave == "") {
+//             noDataArr()
+//           }
+//           // console.log(resAllLeave.length);
+//           // console.log(resAllLeave[0]);
+//           for (let i = 0; i < resAllLeave.length; i++) {
+//             dataArrAllLeave.push(resAllLeave[i])
+//             if (i == (resAllLeave.length - 1)) { // เมื่อ push ข้อมูลจนครบแล้ว
+
+//               mapDataAllLeave()
+//             }
+//           }
+//         })
+//       }
+
+
+//       function noDataArr() {
+//         mapStarfLeaveName = {
+//           id: 0,
+//           myId: 0,
+//           date_create: "",
+//           date_start: "",
+//           unit_date: "",
+//           date_end: "",
+//           type_l: 0,
+//           cause: '',
+//           status: "",
+//           workerId: '',
+//           name_type: '',
+//           order_1: 0,
+//           order_2: 0,
+//           order_3: 0,
+//           order_4: 0,
+//           order_5: 0,
+//           order_6: 0,
+//           order_7: 0
+//         }
+//         demonDataLeave = {
+//           idUser: 0,
+//           leave: 0,
+//           sick: 0
+//         }
+//         mapTotalLeave.push(demonDataLeave)
+//         fnRender()
+//       }
+
+//       function mapDataAllLeave() { // เอาบุคคลที่ลา มาคัดกับการลาทั้งหมด
+//         console.log("ขอลา");
+
+//         let l_idUser = ""
+//         let l_leave = 0
+//         let l_sick = 0
+//         let l_cut = 0
+
+//         for (let i = 0; i < mapStarfLeaveName.length; i++) {
+//           l_idUser = ""
+//           l_leave = 0
+//           l_sick = 0
+//           l_cut = 0
+
+//           for (let x = 0; x < dataArrAllLeave.length; x++) {
+//             if (mapStarfLeaveName[i][0].id_user == dataArrAllLeave[x].myId) {
+//               l_idUser = dataArrAllLeave[x].myId
+//               if (dataArrAllLeave[x].type_l < 10) {
+//                 // console.log(dataArrAllLeave[x].type_l)
+//                 //console.log("status = " + dataArrAllLeave[x].dataStatus);
+//                 l_sick += dataArrAllLeave[x].unit_date
+//                 // l_sick += dataArrAllLeave[x].unit_date
+//               } else if (dataArrAllLeave[x].type_l == 10) {
+//                 console.log("ลากิจ");
+//                 l_leave += dataArrAllLeave[x].unit_date
+//                 console.log(l_leave);
+
+//                 // l_leave += 9
+
+//               } else if (dataArrAllLeave[x].type_l == 20) {
+
+//                 l_cut += dataArrAllLeave[x].unit_date
+
+//               }
+//             }
+//           }
+//           demonDataLeave = {
+//             idUser: l_idUser,
+//             leave: l_leave,
+//             sick: l_sick,
+//             lcut: l_cut
+//           }
+//           mapTotalLeave.push(demonDataLeave)
+
+//         }
+//         fnRender()
+
+//       }
+
+//       function fnRender() {
+//         console.log("***+++-----");
+//         console.log(mapTotalLeave);
+//         console.log("***+++-----");
+//         // console.log(dataAllLeave);
+//         res.render('managerOrderDetail', {
+//           htmlTitle: "manager",
+//           dataStarf: mapStarf2, // รายชื่อ
+//           dataLeaveTotal: mapDataLeave, // รวมลาป่วย
+//           dataStarfLeave: mapStarfLeave,
+//           dataStarfLeaveName: mapStarfLeaveName,
+//           mapTotalLeave
+//         })
+//       }
+//     }
+
+//     main()
+//   }
+// })
 
 // ผู้บริหาร order_1 // เลื่อก Detail Starf
 router.get('/manager/:id', (req, res) => {
@@ -2936,6 +3046,7 @@ router.get('/manager/:id', (req, res) => {
   let orderName = [] // รายชื่อผู้อนุมัติ
   let detailLeave = [] // รายละเอียดการลา
   /* เพิ่มเติม */
+  let mapDataArrAllLeave = [] // Arr การขอลาทั้งหมด ของบุคคล รับการ push จาก Database
 
   async function main() {
 
@@ -3015,21 +3126,6 @@ router.get('/manager/:id', (req, res) => {
 
   function fnDp() {
 
-    // function groupBy(list, keyGetter) {
-    //   const map = new Map();
-    //   list.forEach((item) => {
-    //     const key = keyGetter(item);
-    //     const collection = map.get(key);
-    //     if (!collection) {
-    //       map.set(key, [item]);
-    //     } else {
-    //       collection.push(item);
-    //     }
-    //   });
-    //   return map;
-    // }
-    // let grouped = groupBy(nameStarf, item => item.id_dp);
-    // console.log(grouped);
     sendData()
 
   }
@@ -3246,39 +3342,62 @@ router.get('/manager/:id', (req, res) => {
         for (let i = 0; i < mapStarfLeave.length; i++) {
           conn.query(sql, [mapStarfLeave[i].myId], (err, resNammStarf) => {
             // res.send(resNammStarf)
+            console.log(resNammStarf);
+
             mapStarfLeaveName.push(resNammStarf)
             if (i == (mapStarfLeave.length - 1)) {
 
-              fnMapTotalLeave()
+              fnMapTotalLeave() // TEST Comment
+              // indexStarf()
+              // findAllLeaveStarf()
             }
           })
         }
       }
 
+      // NEW
+
+
+
+
+      // END NEW
+
       // mapTotalLeave
       // หาการลาทั้งหมด
+
       function fnMapTotalLeave() {
-        let sql = "SELECT * FROM leavedata "
+        let sql = "SELECT *,leavedata.id As idData FROM leavedata "
         sql += "INNER JOIN leave_type ON leavedata.type_l = leave_type.id "
         sql += "INNER JOIN leaveorder ON leavedata.myId = leaveorder.myId "
         sql += "WHERE (leaveorder.order_1 = ? OR leaveorder.order_2 = ?) AND leavedata.`status` = 1 "
+        sql += "AND leavedata.myId = ?"
+        console.log(sql);
 
-
-        // console.log(mapStarfLeaveName[1][0]); // ใช้ได้
+        console.log(mapStarfLeaveName[0]); // ใช้ได้
         // console.log(mapStarfLeaveName.length); // ใช้ได้
         // console.log(resAllLeave[0].myId); // ใช้ได้
         // console.log("cookieId = " + cookieId);
-        connl.query(sql, [cookieId, cookieId], (err, resAllLeave) => {
-          // console.log(resAllLeave.length);
-          // console.log(resAllLeave[0]);
-          for (let i = 0; i < resAllLeave.length; i++) {
-            dataArrAllLeave.push(resAllLeave[i])
-            if (i == (resAllLeave.length - 1)) { // เมื่อ push ข้อมูลจนครบแล้ว
-              mapDataAllLeave()
+        for (let i = 0; i < mapStarfLeaveName.length; i++) {
+          connl.query(sql, [cookieId, cookieId, mapStarfLeaveName[i][0].id_user], (err, resAllLeave) => {
+            // console.log(resAllLeave.length);
+            console.log("-------------");
+            console.log(resAllLeave);
+            dataArrAllLeave.push(resAllLeave)
+            // console.log(resAllLeave[0]);
+            // for (let i = 0; i < mapStarfLeaveName.length; i++) {
+            // dataArrAllLeave.push(resAllLeave[i])
+            if (i == (mapStarfLeaveName.length - 1)) { // เมื่อ push ข้อมูลจนครบแล้ว
+              // mapDataAllLeave()
+              indexStarf()
             }
-          }
-        })
+            // }
+          })
+        }
+
+
       }
+
+      /*
 
       function mapDataAllLeave() { // เอาบุคคลที่ลา มาคัดกับการลาทั้งหมด
 
@@ -3290,7 +3409,7 @@ router.get('/manager/:id', (req, res) => {
 
         // console.log(mapStarfLeaveName);
         console.log("*********");
-        // console.log(dataArrAllLeave);
+        console.log(dataArrAllLeave);
 
 
         for (let i = 0; i < mapStarfLeaveName.length; i++) {
@@ -3341,19 +3460,43 @@ router.get('/manager/:id', (req, res) => {
         indexStarf()
       }
 
+      */
+
+
+
       /* เพิ่มเติม */
       /* สำหรับ ที่อยู่ Staf */
       function indexStarf() {
+
+        console.log(dataArrAllLeave.length);
+
+        mapDataArrAllLeave = dataArrAllLeave.map(item => {
+          return {
+
+          }
+        })
+
+
+
+
         // console.log(mapTotalLeave);
+        //console.log(allLeaveByStarf);
 
         let id = req.params.id
         console.log("Starf Id = " + id);
-        let sql = sqlIndexUserStar
-        conn.query(sql, [id], (err, resStarf) => {
-          // console.log(resStarf);
-          detailStarf = resStarf
-          approveStaf()
-        })
+        if (id == 0) {
+          // fnDetailStafLeave()
+          fnRender()
+        } else {
+          let sql = sqlIndexUserStar
+          conn.query(sql, [id], (err, resStarf) => {
+            // console.log(resStarf);
+            detailStarf = resStarf
+            approveStaf()
+          })
+        }
+
+
       }
       /* ผู้อนุมัติ */
       function approveStaf() {
@@ -3364,6 +3507,7 @@ router.get('/manager/:id', (req, res) => {
 
         function fucnId() {
           let id = req.params.id
+
           let sql = "SELECT * FROM `leaveorder` where myId = ?"
           connl.query(sql, [id], (err, resOrder) => {
             // console.log(resOrder);
@@ -3372,6 +3516,7 @@ router.get('/manager/:id', (req, res) => {
             orderId.push(resOrder[0].order_3)
             fnchName()
           })
+
         }
 
         function fnchName() {
@@ -3480,10 +3625,19 @@ router.get('/manager/:id', (req, res) => {
       /* End เพิ่มเติม */
 
       function fnRender() {
-        detailLeave.sort(function (a, b) {
-          // return ((a.idUser - b.idUser), (a.id_dp - b.id_dp))
-          return ((a.dateCreate - b.dateCreate), (a.id - b.id))
-        });
+        console.log("Pass");
+
+        let id = req.params.id
+        if (id == 0) {
+
+        } else {
+          detailLeave.sort(function (a, b) {
+            // return ((a.idUser - b.idUser), (a.id_dp - b.id_dp))
+            return ((a.dateCreate - b.dateCreate), (a.id - b.id))
+          });
+        }
+
+
 
         // console.log(detailStarf);
 
@@ -3511,22 +3665,69 @@ router.get('/manager/:id', (req, res) => {
         console.log("***+++*****");
 
         // console.log(mapStarfLeave);
-        console.log(mapTotalLeave);
+        // console.log(mapTotalLeave);
         console.log("***+++*****");
 
         // console.log(mapStarfLeaveName); // คนลา
-        res.render('managerStarfDetail', {
-          htmlTitle: "manager",
-          dataStarf: mapStarf2, // รายชื่อ
-          dataLeaveTotal: mapDataLeave, // รวมลาป่วย
-          dataStarfLeave: mapStarfLeave,
-          dataStarfLeaveName: mapStarfLeaveName,
-          mapTotalLeave,
-          detailStarf, // รายละเอียด Staf ในใบลา
-          mapDetailStarf, // map ที่อยู่
-          orderName, // รายชื่อผู้อนุมัติ
-          detailLeave
-        })
+
+        /* map วันที่ */
+        console.log(dataArrAllLeave);
+
+        let dataArrAllLeaveDate = []
+
+        for (let i = 0; i < dataArrAllLeave.length; i++) {
+
+          dataArrAllLeaveDate[i] = dataArrAllLeave[i].map(item => {
+            return {
+              startDate: moment(item.date_start).format('DD-MM-YYYY'),
+              startEnd: moment(item.date_end).format('DD-MM-YYYY')
+            }
+          })
+
+        }
+
+        console.log(dataArrAllLeaveDate);
+
+        /* end map วันที่*/
+
+        if (id != 0) {
+          res.render('managerStarfDetail', {
+            htmlTitle: "manager",
+            dataStarf: mapStarf2, // รายชื่อ
+            dataLeaveTotal: mapDataLeave, // รวมลาป่วย
+            dataStarfLeave: mapStarfLeave,
+            dataStarfLeaveName: mapStarfLeaveName,
+            mapTotalLeave,
+            detailStarf, // รายละเอียด Staf ในใบลา
+            mapDetailStarf, // map ที่อยู่
+            orderName, // รายชื่อผู้อนุมัติ
+            detailLeave,
+            // for TEST
+            dataArrAllLeave,
+            mapDataArrAllLeave,
+            dataArrAllLeaveDate // วัน map
+          })
+        } else {
+          detailStarf = []
+          res.render('managerStarfDetail', {
+            htmlTitle: "manager",
+            dataStarf: mapStarf2, // รายชื่อ
+            dataLeaveTotal: mapDataLeave, // รวมลาป่วย
+            dataStarfLeave: mapStarfLeave,
+            dataStarfLeaveName: mapStarfLeaveName,
+            mapTotalLeave,
+            detailStarf, // รายละเอียด Staf ในใบลา
+            mapDetailStarf, // map ที่อยู่
+            orderName, // รายชื่อผู้อนุมัติ
+            //detailLeave,
+            // for TEST
+            dataArrAllLeave,
+            mapDataArrAllLeave,
+            dataArrAllLeaveDate // วัน map
+
+          })
+        }
+
       }
     }
     main()
@@ -3535,8 +3736,9 @@ router.get('/manager/:id', (req, res) => {
 
 
 
-router.get('/approveUpdateIndex/:id', (req, res) => {
+router.get('/approveUpdateIndex/:id/:idUser', (req, res) => {
   let id = req.params.id
+  let idUser = req.params.idUser
   console.log(id);
   let cookieId = req.cookies["idUser"]
 
@@ -3554,7 +3756,7 @@ router.get('/approveUpdateIndex/:id', (req, res) => {
     //let id = req.params.id
     console.log("id = " + id);
 
-    let sql = "UPDATE leavedata SET status = 2 WHERE status = 1 AND myId = ?"
+    let sql = "UPDATE leavedata SET status = 2 WHERE status = 1 AND id = ?"
     connl.query(sql, [id], (err, result) => {
       fnSendDataApp()
     })
@@ -3563,20 +3765,161 @@ router.get('/approveUpdateIndex/:id', (req, res) => {
   function fnSendDataApp() {
     //let id = req.params.id
     // res.redirect('../manager/')
-    res.redirect('../manager/' + id)
+    // res.redirect('../manager/' + id)
+    res.redirect('../../manager/' + idUser)
   }
 })
 
+// ไม่อนุมัติ index สำหรับผู้จัดการ
+router.get('/notApproveUpdateIndex/:id/:idUser', (req, res) => {
+  let id = req.params.id
+  let idUser = req.params.idUser
+  console.log(id);
+  let cookieId = req.cookies["idUser"]
+
+  if (cookieId == undefined) {
+    res.redirect('../login')
+  } else {
+    main()
+  }
+
+  async function main() {
+    await fnUpdateAppgro()
+  }
+
+  function fnUpdateAppgro() {
+    //let id = req.params.id
+    console.log("id = " + id);
+
+    //let sql = "UPDATE leavedata SET status = 2 WHERE status = 1 AND leavedata.id = ?"
+    // chk ก่อนว่าเป็นขาดงานหรือไม่
+    let sqlChkCut = "SELECT type_l FROM `leavedata` WHERE id = ?"
+    connl.query(sqlChkCut, [id], (err, resChkCut) => {
+      console.log(resChkCut);
+      if (resChkCut[0].type_l == 20) { // ถ้าเป็นขาดงาน ให้เช็ควัน ว่า เป็นป่วย หรือ กิจ
+
+        let sqlChkDateForLeaveOrCut = "SELECT * FROM `leavedata` WHERE id = ?"
+        connl.query(sqlChkDateForLeaveOrCut, [id], (err, resChkDateLC) => {
+          console.log(resChkDateLC[0].date_create);
+          console.log(resChkDateLC[0].date_start);
+          if (resChkDateLC[0].date_create > resChkDateLC[0].date_start) {
+            console.log("ลาป่วย");
+            let sqlAppSick = "UPDATE leavedata SET status = 2,leavedata.type_l = 6 WHERE leavedata.id = ?"
+            connl.query(sqlAppSick, [id], (err, result) => {
+              fnSendDataApp()
+            })
+
+          } else {
+            console.log("ลากิจ");
+            let sqlAppSick = "UPDATE leavedata SET status = 2,leavedata.type_l = 10 WHERE leavedata.id = ?"
+            connl.query(sqlAppSick, [id], (err, result) => {
+              fnSendDataApp()
+            })
+          }
+        })
+
+        // let sql = "UPDATE leavedata SET status = 2,leavedata.type_l = 20 WHERE leavedata.id = ?"
+        // connl.query(sql, [id], (err, result) => {
+        //   fnSendDataApp()
+        // })
+
+      } else { // ถ้าไม่ใช่ขาดงาน
+        // เช็คก่อนว่า วันไหน
+        let dateNow = moment().format('YYYY-MM-DD');
+        console.log(dateNow);
+
+        let sqlChkDateLevae = "SELECT * FROM`leavedata` WHERE id = ? And date_start > ?"
+        connl.query(sqlChkDateLevae, [id, dateNow], (err, resChkDate) => {
+          console.log(resChkDate);
+          if (resChkDate != "") { // ถ้ามีให้ลบออก
+            sql = sqlDelApprove // ทำการลบออก
+            connl.query(sql, [id], (err, result) => {
+              if (err) throw console.log(err);
+              // res.redirect('../../userOrder1/' + idUser)
+              fnSendDataApp()
+            })
+          } else { // ถ้าเลยมาแล้วให้ ขาดงาน
+            sql = sqlNotApproveAll // update ขาดงาน
+            connl.query(sql, [id], (err, result) => {
+              if (err) throw console.log(err);
+              // res.redirect('../../userOrder1/' + idUser)
+              fnSendDataApp()
+            })
+          }
+        })
+
+      }
+    })
+    // end chk ก่อนว่าเป็นขาดงานหรือไม่
+  }
+
+
+  function fnSendDataApp() {
+    //let id = req.params.id
+    // res.redirect('../manager/')
+    // res.redirect('../manager/' + id)
+    res.redirect('../../manager/' + idUser)
+  }
+})
+//
+
 
 router.post('/approveAllForManager', (req, res) => {
-  console.log("approveAll");
-  let data = req.body
-  res.send(data)
-  // res.end()
+
+  async function main() {
+    await update_2()
+  }
+
+  function update_2() {
+
+
+    console.log("approveAll");
+    let data = req.body
+    let sql = "UPDATE leavedata SET status = 2 WHERE id = ?"
+
+    console.log(data.idData.length);
+    console.log(typeof (data.idData));
+    console.log(data.idData);
+
+    console.log(data);
+    let idUser = req.body.idUser
+    if (typeof (data.idData) === 'string') {
+      console.log("is string");
+      connl.query(sql, [data.idData], (err, resUpdate) => {
+        sendData()
+      })
+    } else {
+      for (let i = 0; i < data.idData.length; i++) {
+        connl.query(sql, [data.idData[i]], (err, resUpdate) => {
+          if (err) throw console.log(err);
+          if (i == (data.idData.length - 1)) {
+            sendData()
+          }
+        })
+
+      }
+    }
+  }
+
+  function sendData() {
+    res.redirect('../manager/0')
+  }
+
+  main()
+  //res.redirect('../manager/0')
+
+  // connl.query(sql, [getId], (err, resUpdate) => {
+  //   if (err) throw console.log(err);
+  //   res.redirect('../ceo/')
+  // })
+
 })
 
 
-router.get('/ceo', (req, res) => {
+router.get('/ceo/:idUserStarf/:onpenAll/:idDp', (req, res) => {
+  let id1 = req.params.idDp
+  console.log("id1 = " + id1);
+
 
   let meUser = [] // ผู้ใช้งาน
   let arrAllDp = [] // ชื่อ แผนกทั้งหมด
@@ -3587,6 +3930,12 @@ router.get('/ceo', (req, res) => {
   let indexStarfLeave = [] // ผู้ขอลา รวม
   let datatotalLeave = [] // รวมยอดการลา
   let mindexStarfLeave = [] // map
+  let detailIndex = [] // สรุปการลาของ Starf ที่เลือก
+  let detalTotalLeaveStarf = [] // สรุปการลา ของ Starf index
+  //
+  let arrIdUser = [] // Id User ของ แผนก
+  let arrNameInDp = [] // name ทั้งหมดของ แผนก
+  let arrDetailAllDp = [] // การลาทั้งหมด ภายในแผนก
 
   function chkLavel() { // เช็คว่าเป็น CEO
     // console.log("ceo");
@@ -3598,12 +3947,12 @@ router.get('/ceo', (req, res) => {
       console.log(resIdCeo);
       if (resIdCeo != "") {
         if (cookieId == undefined) {
-          res.redirect('login')
+          res.redirect('../../../login')
         } else {
           ceoFindDp()
         }
       } else {
-        res.redirect('login')
+        res.redirect('../../../login')
       }
     })
   }
@@ -3750,17 +4099,14 @@ router.get('/ceo', (req, res) => {
     connl.query(sql, (err, resMyId) => {
       // console.log(resMyId);
       // res.end()
-
-
-
-
       if (resMyId == "") {
         console.log("nodata");
         let nonData = {
           myId: 0
         }
         // dataMyId.push(nonData)
-        sendData()
+        // sendData()
+        findIndexStarf()
         // dataMyId = nonData
       } else {
         dataMyId = resMyId
@@ -3786,7 +4132,7 @@ router.get('/ceo', (req, res) => {
     sql += "INNER JOIN personal ON`user`.idper = personal.id_pro "
     sql += "WHERE active = 1 and id_user = ?"
     // console.log(sql);
-    console.log(dataMyId);
+    // console.log(dataMyId);
 
     for (let i = 0; i < dataMyId.length; i++) {
       conn.query(sql, [dataMyId[i].myId], (err, resStarfleave) => {
@@ -3804,8 +4150,8 @@ router.get('/ceo', (req, res) => {
 
   function mapStarfLeave() {
 
-    console.log(allStarfLeave); // คนลา
-    console.log("allStarfLeave = " + allStarfLeave.length);
+    //console.log(allStarfLeave); // คนลา
+    // console.log("allStarfLeave = " + allStarfLeave.length);
 
     for (let i = 0; i < allStarfLeave.length; i++) {
       console.log("id = " + allStarfLeave[i][0].id_user)
@@ -3826,22 +4172,22 @@ router.get('/ceo', (req, res) => {
   // map indexStarfLeave เอาไปแสดงผลการขอลา
   function mapIndexStarfLeave() {
     // console.log(indexStarfLeave.length);
-    // console.log(indexStarfLeave[1]);
-    console.log("การลาทั้งหมดของคน = " + indexStarfLeave.length + " จำนวน Obj");
+    // console.log(indexStarfLeave);
+    // console.log("การลาทั้งหมดของคน = " + indexStarfLeave.length + " จำนวน Obj");
 
 
     // console.log(indexStarfLeave);
-    console.log(indexStarfLeave[0]);
+    // console.log(indexStarfLeave[0]);
 
     for (let i = 0; i < allStarfLeave.length; i++) {
-      console.log("i = " + i);
-
+      // console.log("i = " + i);
       for (let l = 0; l < allStarfLeave[i].length; l++) {
-        console.log("l = " + l);
+        // console.log("l = " + l);
         mindexStarfLeave[i] = indexStarfLeave[i].map(item => {
           // mindexStarfLeave[i] = indexStarfLeave.map(item => {
           return {
             id: item.id,
+            myId: item.myId,
             dateStart: moment(item.date_start).format('DD-MM-YYYY'),
             dateEnd: moment(item.date_end).format('DD-MM-YYYY'),
             unitDate: item.unit_date,
@@ -3852,28 +4198,264 @@ router.get('/ceo', (req, res) => {
       }
 
     }
-    sendData()
+    findIndexStarf()
+  }
+
+
+  function findIndexStarf() {
+    console.log("findIndexStarf");
+    let idIndexStarf = req.params.idUserStarf
+    let dataName = ''
+
+    async function main() {
+      await findDetailStarf()
+    }
+
+    function findDetailStarf() {
+      let sql = "SELECT depart.id_dp,depart.namedp,personal.`name`,"
+      sql += "personal.surname,`user`.id_user,`user`.username_user "
+      sql += "FROM depart "
+      sql += "INNER JOIN`user` ON`user`.depart = depart.id_dp "
+      sql += "INNER JOIN personal ON`user`.idper = personal.id_pro "
+      sql += "WHERE active = 1 and id_user = ?"
+
+      conn.query(sql, [idIndexStarf], (err, resDetailStarf) => {
+        // detailIndex = {
+        //   resDetailStarf
+        // }
+        // detailIndex.push(resDetailStarf)
+        if (resDetailStarf == "") {
+          detailIndex[0] = {
+            name: '',
+            surname: ''
+          }
+          chkAllDp()
+        } else {
+          detailIndex = resDetailStarf
+          findDetailLeave()
+        }
+
+      })
+    }
+
+    function findDetailLeave() {
+      // detailIndex.push(dataName)
+      console.log("findDeatailLeave");
+      // console.log(detailIndex.resDetailStarf[0]);
+      console.log(detailIndex[0]);
+      let sql = "SELECT * FROM leavedata WHERE myId = ? AND status = 3"
+      connl.query(sql, [detailIndex[0].id_user], (err, resLeaveStarf) => {
+        console.log(resLeaveStarf);
+        // let mapResLeaveStart = resLeaveStarf.map(item => {
+        let totalSick = 0
+        let totalLeave = 0
+        let totalCut = 0
+        let arrDemonTotal = {
+          id: 0,
+          totalSick: 0,
+          totalLeave: 0,
+          totalCut: 0
+        }
+        for (let i = 0; i < resLeaveStarf.length; i++) {
+          if (resLeaveStarf[i].type_l < 10) {
+            totalSick += resLeaveStarf[i].unit_date
+          } else if (resLeaveStarf[i].type_l == 10) {
+            totalLeave += resLeaveStarf[i].unit_date
+          } else if (resLeaveStarf[i].type_l == 20) {
+            totalCut += resLeaveStarf[i].unit_date
+          }
+          arrDemonTotal = {
+            id: resLeaveStarf[0].myId,
+            totalSick: totalSick,
+            totalLeave: totalLeave,
+            totalCut: totalCut
+          }
+        }
+
+        detalTotalLeaveStarf = arrDemonTotal
+
+        // })
+        chkAllDp()
+      })
+    }
+    main()
+
+  }
+
+
+  function chkAllDp() {
+    console.log("chkAllDp");
+
+    let idForDp = req.params.idDp
+    console.log("chkIdDpOOO = " + idForDp);
+
+    if (idForDp == 0) {
+      sendData()
+    } else {
+      chkMian()
+    }
+    async function chkMian() {
+      await findAllIdUserInDp()
+    }
+
+    function findAllIdUserInDp() {
+      console.log("findAllIdUserDp");
+      let sql = sqlListName
+      conn.query(sql, [idForDp], (err, resAllIdDp) => {
+        arrIdUser = resAllIdDp
+        findUserAllDp()
+      })
+    }
+
+    function findUserAllDp() {
+      console.log("arrIdUser.length = " + arrIdUser.length);
+      let sql = sqlIndexUser
+      for (let i = 0; i < arrIdUser.length; i++) {
+        conn.query(sql, [arrIdUser[i].id_user], (err, resNameInDp) => {
+          arrNameInDp.push(resNameInDp)
+          if (i == (arrIdUser.length - 1)) {
+            detailAllDp()
+          }
+        })
+      }
+    }
+
+    function detailAllDp() {
+      let sql = "SELECT * FROM `leavedata` WHERE myId = ? AND status = 3 ORDER BY `date_create` ASC"
+
+      for (let i = 0; i < arrIdUser.length; i++) {
+
+        console.log("idUser = " + arrIdUser[i].id_user);
+        connl.query(sql, [arrIdUser[i].id_user], (err, resDetaildp) => {
+          console.log("resDetaildp.length " + resDetaildp.length);
+          arrDetailAllDp.push(resDetaildp)
+          if (i == (arrIdUser.length - 1)) {
+            sendData()
+          }
+        })
+
+      }
+    }
+
   }
 
 
   function sendData() {
-    console.log("obj ที่ map ได้ = " + mindexStarfLeave.length);
 
+    let onpenAll = req.params.onpenAll
+    // console.log("obj ที่ map ได้ = " + mindexStarfLeave.length);
+    // console.log(detalTotalLeaveStarf);
+    // console.log(arrIdUser);
     //console.log(indexStarfLeave[0].length);
     //console.log(mindexStarfLeave);
 
     console.log("***************");
+    // console.log(arrDetailAllDp[0])
+    // console.log(arrDetailAllDp[1])
+    // console.log(arrIdUser.length);
+    // console.log(arrDetailAllDp[0].length);
+    // console.log(mindexStarfLeave);
     //console.log(indexStarfLeave[1].length)
+    // console.log(arrDetailAllDp)
     console.log("***************");
 
-    // console.log(indexStarfLeave.length);
-    // console.log(mindexStarfLeave);
-    // console.log(allStarfLeave);
+    let mapArrDetailAllDp = []
+    console.log("arrDetailAllDp.length = " + arrDetailAllDp.length);
+    let totalSickDp = 0
+    let totalLeaveDp = 0
+    let totalCutDp = 0
+    for (let m = 0; m < arrDetailAllDp.length; m++) {
+      totalSickDp = 0
+      totalLeaveDp = 0
+      totalCutDp = 0
+      console.log("m = " + m);
+      for (let n = 0; n < arrDetailAllDp[m].length; n++) {
+        if (arrDetailAllDp[m][n].type_l < 10) {
+          totalSickDp += arrDetailAllDp[m][n].unit_date
+        } else if (arrDetailAllDp[m][n].type_l == 10) {
+          totalLeaveDp += arrDetailAllDp[m][n].unit_date
+        } else if (arrDetailAllDp[m][n].type_l == 20) {
+          totalCutDp += arrDetailAllDp[m][n].unit_date
+        }
+      }
+      demonArrAllDp = {
+        totalSickDp: totalSickDp,
+        totalLeaveDp: totalLeaveDp,
+        totalCutDp: totalCutDp
+      }
+      mapArrDetailAllDp.push(demonArrAllDp)
+    }
+
+    console.log(mapArrDetailAllDp);
 
 
-    // console.log(indexStarfLeave[0]);
-    // console.log(indexStarfLeave[1].length);
-    // console.log(indexStarfLeave);
+
+
+    // mapData All Dp
+    let mapDetailAllDp = []
+    let totalSick = 0
+    let totalLeave = 0
+    let totalCut = 0
+    let arrDemonTotal = {
+      id: 0,
+      totalSick: 0,
+      totalLeave: 0,
+      totalCut: 0
+    }
+
+    // console.log("arrDetailAllDp.length = " + arrDetailAllDp.length)
+    // console.log(arrDetailAllDp[0])
+    let mapDetailDpIndex = []
+    for (let x = 0; x < arrIdUser.length; x++) {
+
+      // console.log(arrDetailAllDp[x])
+      mapDetailDpIndex[x] = {
+        id: 0,
+        nam: ''
+      }
+
+
+    }
+
+    for (let i = 0; i < arrIdUser.length; i++) {
+      // console.log("i =" + i);
+      // for (let l = 0; l < arrDetailAllDp[i].length; l++) {
+
+      mapDetailAllDp[i] = arrDetailAllDp[i].map(item => {
+        // for (let x = 0; x < arrDetailAllDp[x].length; i++) {
+        //   if (resLeaveStarf[x].type_l < 10) {
+        //     totalSick += resLeaveStarf[x].unit_date
+        //   } else if (resLeaveStarf[x].type_l == 10) {
+        //     totalLeave += resLeaveStarf[i].unit_date
+        //   } else if (resLeaveStarf[i].type_l == 20) {
+        //     totalCut += resLeaveStarf[i].unit_date
+        //   }
+        // }
+        return {
+          id: item.id,
+          myId: item.myId,
+          dateCreate: moment(item.date_create).format('YYYY-MM-DD'),
+          dateStart: moment(item.date_start).format('YYYY-MM-DD'),
+          dateEnd: moment(item.date_end).format('YYYY-MM-DD'),
+          type_l: item.type_l,
+          unitDate: item.unit_date,
+          cause: item.cause,
+          workerId: 'data'
+        }
+      })
+      // }
+
+    }
+
+
+    //console.log(mapDetailAllDp[0].length);
+    console.log("map*/******");
+
+    console.log(mapDetailAllDp.length);
+
+
+    // End mapData All Dp
+
 
     for (let i = 0; i < allStarfLeave.length; i++) {
       let demonData = {
@@ -3915,9 +4497,12 @@ router.get('/ceo', (req, res) => {
 
 
     let mAllStarf = []
+    //console.log(allStarf);
+
     for (let i = 0; i < allStarf.length; i++) {
       mAllStarf[i] = allStarf[i].map(item => {
         return {
+          id_dp: item.id_dp,
           namedp: item.namedp,
           id: item.id_user,
           name: item.name + " " + item.surname
@@ -3928,8 +4513,16 @@ router.get('/ceo', (req, res) => {
 
     // end mapData
     console.log("******senddata****");
-    console.log(datatotalLeave);
-    console.log(datatotalLeave.length);
+    // console.log(mapDetailAllDp.length);
+    // console.log(mapDetailAllDp);
+    // console.log(detalTotalLeaveStarf);
+
+    // console.log(datatotalLeave.length);
+
+    //console.log(mAllStarf);
+
+    // console.log(arrNameInDp.length);
+    // console.log(arrNameInDp);
 
 
     res.render('ceo', {
@@ -3940,7 +4533,15 @@ router.get('/ceo', (req, res) => {
       allStarfLeave, // ชื่อคนลา
       datatotalLeave, // รวมการลา
       indexStarfLeave,
-      mindexStarfLeave
+      mindexStarfLeave,
+      detailIndex, // Starf ที่เลือก
+      detalTotalLeaveStarf, // รวมการลาของ Starf Index
+      onpenAll, // เปิดข้อมูลดูทั้งหมด  1 เปิด 0 ปิด
+      //
+      arrNameInDp, // ชื่อพนักงานทั้งหมด ที่เลือกแยกแผนก
+      mapArrDetailAllDp
+      // mapDetailAllDp
+
       //resLeave
     })
   }
@@ -3950,19 +4551,341 @@ router.get('/ceo', (req, res) => {
 
 })
 
+
+// router.get('/ceo/:idUserStarf/:onpenAll/:idDp', (req, res) => {
+//   let arrIdUser = []
+//   console.log("เลือกแผนก");
+//   let getIdDp = req.params.idDP
+//   let onpenAll = req.params.onpenAll
+//   async function main() {
+//     await findIduserInDp()
+//   }
+
+//   function findIduserInDp() {
+//     let sql = sqlListName
+//     conn.query(sql, [], (err, resId) => {
+//       arrIdUser = resId
+//       sendData()
+//     })
+//   }
+
+//   function sendData() {
+//     res.redirect('/ceo/0/' + onpenAll, {
+//       dataDp: arrIdUser
+//     })
+//   }
+//   main()
+// })
+
+
+
 router.post('/approv_3', (req, res) => {
   let data = req.body
-
-  console.log(typeof (data.getId));
-  if (typeof (data.getId == 'string')) {
-    console.log("string");
-
+  let idData = []
+  // console.log(typeof (data.getId));
+  if (typeof (data.getId) == 'string') {
+    // console.log("is string");
+    idData.push(data.getId)
   } else {
-    console.log("object");
+    // console.log("is object");
+    idData = data.getId
+  }
+  // console.log(data.getId[0]);
+  // console.log(idData.length);
+  // console.log(idData);
+  let sqlUpdate = "UPDATE leavedata SET status = 3 WHERE id = ?"
+  for (let i = 0; i < idData.length; i++) {
+    let sql = sqlUpdate
+    connl.query(sql, [idData[i]], (err, resUpdate) => {
+      if (i == (idData.length - 1)) {
+        // res.send("update ok")
+        res.redirect('../../ceo/0/1/0')
+      }
+    })
+  }
+})
+
+router.get('/updateAppCeo/:id/:idUser/:idOpen', (req, res) => {
+  let getOpen = req.params.idOpen
+  let getId = req.params.id
+  let getIduser = req.params.idUser
+
+  let sql = "UPDATE leavedata SET status = 3 WHERE id = ?"
+  connl.query(sql, [getId], (err, resUpdate) => {
+    if (err) throw console.log(err);
+    res.redirect('../../../ceo/' + getIduser + "/" + getOpen + "/0")
+  })
+})
+
+router.get('/updateCutCeo/:id/:idUser/:idOpen', (req, res) => {
+  let getOpen = req.params.idOpen
+
+  let id = req.params.id
+  let getIduser = req.params.idUser
+
+  console.log(getOpen+getOpen+getOpen);
+  
+  // เช็คก่อนว่าเป็นขาดงานหรือไม่ ถ้าเป็นขาดงานให้กลับมาเป็นลา
+  
+  let sqlChkCut = "SELECT type_l FROM `leavedata` WHERE id = ?"
+    connl.query(sqlChkCut, [id], (err, resChkCut) => {
+      console.log(resChkCut);
+      if (resChkCut[0].type_l == 20) { // ถ้าเป็นขาดงาน ให้เช็ควัน ว่า เป็นป่วย หรือ กิจ
+
+        let sqlChkDateForLeaveOrCut = "SELECT * FROM `leavedata` WHERE id = ?"
+        connl.query(sqlChkDateForLeaveOrCut, [id], (err, resChkDateLC) => {
+          console.log(resChkDateLC[0].date_create);
+          console.log(resChkDateLC[0].date_start);
+          if (resChkDateLC[0].date_create > resChkDateLC[0].date_start) {
+            console.log("ลาป่วย");
+            let sqlAppSick = "UPDATE leavedata SET status = 3,leavedata.type_l = 6 WHERE leavedata.id = ?"
+            connl.query(sqlAppSick, [id], (err, result) => {
+               res.redirect('../../../ceo/' + getIduser + "/" + getOpen + "/0")
+            })
+
+          } else {
+            console.log("ลากิจ");
+            let sqlAppSick = "UPDATE leavedata SET status = 3,leavedata.type_l = 10 WHERE leavedata.id = ?"
+            connl.query(sqlAppSick, [id], (err, result) => {
+               res.redirect('../../../ceo/' + getIduser + "/" + getOpen + "/0")
+            })
+          }
+        })
+
+      } else {
+
+        // เช็คก่อนว่า วันไหน
+        let dateNow = moment().format('YYYY-MM-DD');
+        console.log(dateNow);
+
+        let sqlChkDateLevae = "SELECT * FROM`leavedata` WHERE id = ? And date_start > ?"
+        connl.query(sqlChkDateLevae, [id, dateNow], (err, resChkDate) => {
+          console.log(resChkDate);
+          if (resChkDate != "") { // ถ้ามีให้ลบออก
+            sql = sqlDelApprove // ทำการลบออก
+            connl.query(sql, [id], (err, result) => {
+              if (err) throw console.log(err);
+               res.redirect('../../../ceo/' + getIduser + "/" + getOpen + "/0")
+              // fnSendDataApp()
+            })
+          } else { // ถ้าเลยมาแล้วให้ ขาดงาน
+            sql = "UPDATE leavedata SET status = 3 ,type_l = 20 WHERE id = ?" // update ขาดงาน
+            connl.query(sql, [id], (err, result) => {
+              if (err) throw console.log(err);
+               res.redirect('../../../ceo/' + getIduser + "/" + getOpen + "/0")
+              // fnSendDataApp()
+            })
+          }
+        })
+
+        //  let sql = "UPDATE leavedata SET status = 3 ,type_l = 20 WHERE id = ?"
+        //  connl.query(sql, [id], (err, resUpdate) => {
+        //    if (err) throw console.log(err);
+        //    res.redirect('../../../ceo/' + getIduser + "/" + getOpen + "/0")
+        //  })
+
+      } // ถ้าไม่ใช่ขาดงาน
+    })
+  // end เช็คก่อนว่าเป็นขาดงานหรือไม่
+  
+
+})
+
+router.get('/showDetailLeave/:idUser', (req, res) => {
+  let getIdUser = req.params.idUser
+  // console.log(getIdUser);
+
+  async function main() {
+    await findDetailStarfIndex()
+  }
+
+  let nameStaf = []
+  let detaiStarf = []
+  let orderId = []
+  let arrNameOrder = []
+  //let dataIdStarf = []
+  // res.end()
+  function findDetailStarfIndex() {
+    let sql = "SELECT * FROM `leavedata` WHERE myId = ? AND status = 3 Order by date_create ASC"
+    connl.query(sql, [getIdUser], (err, resLeave) => {
+      // console.log(resLeave);
+      detaiStarf = resLeave
+      // res.end()
+      findNameStarf()
+    })
+  }
+
+  function findNameStarf() {
+    let sql = sqlIndexUserStar
+    conn.query(sql, [getIdUser], (err, resName) => {
+      if (err) throw console.log(err);
+      // console.log(resName);
+      nameStaf = resName
+      findOrder()
+    })
+  }
+
+  function findOrder() {
+    let sql = "SELECT * FROM `leaveorder` WHERE myId = ?"
+    connl.query(sql, [getIdUser], (err, resId) => {
+
+      //console.log(resId);
+      // console.log(resId[0].order_1);
+      // console.log(resId[0].order_2);
+      if (resId == "") {
+        console.log("no order");
+        // res.send("No data โปรดติดต่อ Admin 001")
+        res.render('nodata', {
+          title: 'no data'
+        })
+      } else {
+        orderId.push(resId[0].order_1)
+        orderId.push(resId[0].order_2)
+        orderId.push(resId[0].order_3)
+        orderId.push(resId[0].order_4)
+        orderId.push(resId[0].order_5)
+        // console.log(orderId.length);
+        findNameOrder()
+      }
+    })
+  }
+
+  function findNameOrder() {
+    console.log(orderId);
+    
+    let sql = sqlIndexUser
+    for (let i = 0; i < orderId.length; i++) {
+      conn.query(sql, [orderId[i]], (err, resNameOrder) => {
+        // console.log(resNameOrder);
+        // console.log("********-----****");
+        demonNull = [{
+          name: '-'
+        }]
+        if (resNameOrder == "") {
+          arrNameOrder.push(demonNull)
+        } else {
+          arrNameOrder.push(resNameOrder)
+        }
+        if (i == (orderId.length - 1)) {
+          listOrder()
+        }
+      })
+    }
 
   }
-  console.log(data.getId[0]);
-  res.end()
+
+  function listOrder() {
+    sendData()
+  }
+
+  function sendData() {
+    // console.log(orderId.length);
+    // console.log(orderId);
+    // console.log(orderId[0]);
+    // console.log(arrNameOrder.length);
+    //console.log(arrNameOrder);
+    // mapData
+    let mapDetailStarf = detaiStarf.map(item => {
+
+      return {
+        id: item.id,
+        myId: item.myId,
+        dateCreate: moment(item.date_create).format('YYYY-MM-DD'),
+        dateStart: moment(item.date_start).format('YYYY-MM-DD'),
+        dateEnd: moment(item.date_end).format('YYYY-MM-DD'),
+        type_l: item.type_l,
+        unitDate: item.unit_date,
+        cause: item.cause,
+        workerId: 'data'
+      }
+    })
+    // End mapData
+
+
+
+    //  mapData nameStarf
+    let addno = ""
+    let moo = ""
+    let vellage = ""
+    let road = ""
+    let nametambon = ""
+    let nameAmpur = ""
+    let nameProvi = ""
+
+    let mapNameStarf = nameStaf.map(item => {
+
+      if (item.addno == "-") {
+        addno = ""
+      } else {
+        addno = item.addno
+      }
+
+      if (item.moo == "-") {
+        moo = ""
+      } else {
+        moo = item.moo
+      }
+      if (item.vellage == "-") {
+        vellage = ""
+      } else {
+        vellage = item.vellage
+      }
+
+      if (item.road == "-") {
+        road = ""
+      } else {
+        road = item.road
+      }
+
+      if (item.nametambon == "-") {
+        nametambon = ""
+      } else {
+        nametambon = item.nametambon
+      }
+
+      if (item.nameAmpur == "-") {
+        nameAmpur = ""
+      } else {
+        nameAmpur = item.nameAmpur
+      }
+
+      if (item.nameProvi == "-") {
+        nameProvi = ""
+      } else {
+        nameProvi = item.nameProvi
+      }
+
+      return {
+        id: item.id_user,
+        fullName: item.fistname + "  " + item.surname,
+        agroId: item.username_user,
+        nameDp: item.namedp,
+        address: addno + " " + moo + " " + vellage + " " + road + " " + nametambon + " " + nameAmpur + " " + nameProvi,
+        tel: item.tel
+      }
+    })
+    //  End mapData nameStarf
+
+    // console.log(mapDetailStarf);
+    // console.log(arrNameOrder); // รายชื่อผู้อนุมัติ ตามอันดับ
+
+    // console.log(arrNameOrder);
+    
+
+    res.render('detailLeaveStarf', {
+      title: 'รายละเอียดการลาของพนักงาน',
+      nameStaf,
+      detaiStarf,
+      dataListLeave: mapDetailStarf,
+      mapNameStarf,
+      arrNameOrder
+    })
+  }
+
+  main()
+
 })
+
+
 
 module.exports = router;

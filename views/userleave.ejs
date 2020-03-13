@@ -363,6 +363,7 @@
                 <span style="border: 0px solid;"><%=dataListLeave[i].totalCut%></span>
             </li>
             <li class="lavType">
+                <%=//dataListLeave[i].status%>
                 <% if(dataListLeave[i].status == 0){ %>
                 <span>
                     <i class="material-icons" onclick="deleteLeave(<%=dataListLeave[i].leaveId%>,<%=dataUser.idUser%>)">
@@ -372,11 +373,25 @@
                 <% }else{ %>
                 <span><%=dataUser.nickname%></span>
                 <% } %>
-                <span style=" border: 0px solid;">&nbsp;</span>
+                <span style=" border: 0px solid;">
+                    <% if(dataListLeave[i].status != 0){ %>
+                    <%=arrListOrderName[0]%>
+                    <% } %>
+                </span>
             </li>
             <li class="lavType">
-                <span>&nbsp;</span>
-                <span style="border: 0px solid;">&nbsp;</span>
+                <span>
+                    <% if(dataListLeave[i].status != 0){ %>
+                    <%=arrListOrderName[1]%>
+                    <% } %>
+                </span>
+                <span style="border: 0px solid;">
+                    <% if(dataListLeave[i].status != 0){ %>
+                    <%=//arrListOrderName[2]%>
+                    Pass
+                    <% } %>
+
+                </span>
             </li>
             <li style="flex:0.8;"><%=mDetailWorker[i].name%></li>
 

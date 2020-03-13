@@ -1,0 +1,314 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/javascripts/script.js"></script>
+
+    <title><%= title %></title>
+</head>
+
+<body>
+    <div class="boxleave">
+        <ul class="headComp">
+            <li style="justify-content: flex-start;">
+                <img src="/images/logo_srimaung.png" alt="">
+            </li>
+            <li>
+                บริษัท แอ็กโกรคอมเมอร์สกรุ๊ป จำกัด
+            </li>
+            <li style="flex:1;justify-content: center">
+                <i onclick="winClose()" class="material-icons" style="font-size: 50px;color: red; cursor: pointer;">
+                    close
+                </i>
+            </li>
+        </ul>
+        <ul class="headTitle">
+            <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+            <li>ใบลา</li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name">ชื่อ</label>
+                <span style="flex: 2;"><%=mapNameStarf[0].fullName%></span>
+                <label for="name">ชื่อเล่น</label>
+                <span>&nbsp;</span>
+                <label for="name">รหัสพนักงาน</label>
+                <span><%=mapNameStarf[0].agroId%></span>
+                <label style="flex: 2; font-size:24px; text-align:right;" for="name">หน้า 1</label>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name">ตำแหน่ง</label>
+                <span>&nbsp;</span>
+                <label for="name">แผนก/ฝ่าย</label>
+                <span><%=mapNameStarf[0].namedp%></span>
+                <label for="name"></label>
+                <span></span>
+                <label style="flex: 2; font-size:24px" for="name"></label>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name">ในระหว่างการลาสามารถติดต่อข้าเจ้าได้ที่</label>
+                <span style="flex: 1;">
+                    <%=mapNameStarf[0].address%>
+                </span>
+                <label for="name" style="text-align: left;">ขั้นตอนการลา</label>
+                <span></span>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name">เบอร์โทรฉุกเฉิน</label>
+                <span><%=mapNameStarf[0].tel%></span>
+                <label style="flex:2;" for="name">ลากิจ : ให้ลาล่วงหน้าก่อน 3 วัน
+                    และต้องได้รับอนุมัติก่อนหยุดงาน</label>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name" style="flex: 0.5;">ผู้บังคับบัญชา</label>
+                <label for="name" style="flex: 0.5;">ผู้บังคับบัญชา (อนุมัติ 1)</label>
+                <span><%=arrNameOrder[0][0].name%></span>
+
+                <label style="flex:2;" for="name">ลาป่วย : ให้ลงบันทึกในวันแรกที่กลับมาทำงาน การลาติดต่อกัน 3
+                    วันให้แนบใบรับรองแพทย์</label>
+            </li>
+        </ul>
+        <ul class="leavename">
+            <li>
+                <label for="name" style="flex: 0.5;"></label>
+                <label for="name" style="flex: 0.5;">ผู้บังคับบัญชา (อนุมัติ 2)</label>
+                <span><%=arrNameOrder[1][0].name%></span>
+                <label style="flex:2;" for="name"></label>
+            </li>
+        </ul>
+        <ul class="tbl">
+            <li class="tbl1" style="flex:0.3;">
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>ลำดับ</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="tbl1" style="flex:0.5;">
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>วันเดือนปี</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="tbl3">
+                <ul>
+                    <li>ประเภทการลา</li>
+                </ul>
+                <ul>
+                    <li>ลาป่วย</li>
+                    <li>ลากิจ</li>
+                    <li>ขาดงาน</li>
+                </ul>
+                <ul>
+                    <li>(30 วัน)</li>
+                    <li>(6 วัน)</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="tbl3">
+                <ul>
+                    <li>วัน/เดือน/ปี</li>
+                </ul>
+                <ul>
+                    <li>เริ่มต้น</li>
+                    <li>สิ้นสุด</li>
+                </ul>
+                <ul>
+                    <li>วันลา</li>
+                    <li>วันลา</li>
+                </ul>
+            </li>
+            <li class="tbl1" style="flex:0.8;">
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>เหตุผลการลา</li>
+                    <li>&nbsp;</li>
+                </ul>
+            </li>
+            <li class="tbl3" style="flex: 2.5;">
+                <ul>
+                    <li>ข้อมูลการลา</li>
+                </ul>
+                <ul>
+                    <li>ลาป่วย</li>
+                    <li>ลากิจ</li>
+                    <li>ขาดงาน</li>
+                    <li>รวม</li>
+                    <li>รวม</li>
+                    <li>รวม</li>
+                </ul>
+                <ul>
+                    <li>มาแล้ว</li>
+                    <li>มาแล้ว</li>
+                    <li>มาแล้ว</li>
+                    <li>ลาป่วย</li>
+                    <li>ลากิจ</li>
+                    <li>ขาดงาน</li>
+                </ul>
+            </li>
+            <li class="tbl3">
+                <ul>
+                    <li>ลายเซ็น</li>
+                </ul>
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>&nbsp;</li>
+                </ul>
+                <ul>
+                    <li>ผู้ขอลา</li>
+                    <li>ผู้อนุมัติ</li>
+                </ul>
+            </li>
+            <li class="tbl3">
+                <ul>
+                    <li>ลายเซ็น</li>
+                </ul>
+                <ul>
+                    <li>&nbsp;</li>
+                    <li>&nbsp;</li>
+                </ul>
+                <ul>
+                    <li>ผู้อนุมัติ</li>
+                    <li>ผู้อนุมัติ</li>
+                </ul>
+            </li>
+            <li class="tbl1" style="flex:0.8;">
+                <ul style="border:0px solid;">
+                    <li>ผู้ปฏิบัติงานแทน</li>
+                </ul>
+            </li>
+
+        </ul>
+
+        <% let beforI = 0 %>
+        <% let totalSick = 0 %>
+        <% let totalLeave = 0 %>
+        <% let totalCut = 0 %>
+
+        <% let arrTotal = [] %>
+        <% let arrTotalLeave = [] %>
+        <% let arrTotalCut = [] %>
+
+        <%= //dataListLeave[0].unitDate %>
+        <% for(let i = 0; i < dataListLeave.length; i++){ %>
+        <ul class="tblData">
+            <li style="flex:0.3;"><%=(i+1)%></li>
+            <li style="flex:0.5;"><%=dataListLeave[i].dateCreate%></li>
+            <li class="lavType">
+                <% arrTotal[i] = arrTotal[(i-1)] %>
+                <% if(dataListLeave[i].type_l < 10) { %>
+
+                <% totalSick = totalSick +  dataListLeave[i].unitDate %>
+                <% arrTotal[i] = totalSick %>
+
+                <span><%=dataListLeave[i].unitDate%></span>
+                <span>-</span>
+                <span style="border: 0px solid;">-</span>
+                <% }else if(dataListLeave[i].type_l == 10){ %>
+
+                <% totalLeave = totalLeave +  dataListLeave[i].unitDate %>
+                <% arrTotalLeave[i] = totalLeave %>
+
+                <span>-</span>
+                <span><%=dataListLeave[i].unitDate%></span>
+                <span style="border: 0px solid;">-</span>
+                <% }else if(dataListLeave[i].type_l == 20){ %>
+
+                <% totalCut = totalCut +  dataListLeave[i].unitDate %>
+                <% arrTotalCut[i] = totalCut %>
+
+                <span>-</span>
+                <span>-</span>
+                <span style="border: 0px solid;"><%=dataListLeave[i].unitDate%></span>
+                <% } %>
+
+            </li>
+            <li class="lavType">
+                <span><%=dataListLeave[i].dateStart%></span>
+                <span style="border: 0px solid;"><%=dataListLeave[i].dateEnd%></span>
+            </li>
+            <li style="flex:0.8;"><%=dataListLeave[i].cause%></li>
+            <li class="lavData">
+                <span>
+                    <%= arrTotal[(i-1)]%>
+                </span>
+                <span>
+                    <%= arrTotalLeave[(i-1)]%>
+                </span>
+                <span>
+                    <%= arrTotalCut[(i-1)] %>
+                </span>
+                <span><%=totalSick%></span>
+                <span><%=totalLeave%></span>
+                <span style="border: 0px solid;"><%=totalCut%></span>
+            </li>
+            <li class="lavType">
+                <span><%=nameStaf[0].fistname%></span>
+                <span style=" border: 0px solid;">
+                    <%=arrNameOrder[0][0].name%>
+                </span>
+            </li>
+            <li class="lavType">
+                <span> <%=arrNameOrder[1][0].name%></span>
+                <span style="border: 0px solid;">Pass
+                <%=//arrNameOrder[2][0].name%>
+                </span>
+            </li>
+            <li style="flex:0.8;"></li>
+        </ul>
+        <% } %>
+        <% for(let i = dataListLeave.length; i < 30; i++){ %>
+        <ul class="tblData">
+            <li style="flex:0.3;"><%=(i+1)%></li>
+            <li style="flex:0.5;">&nbsp;</li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li style="flex:0.8;">&nbsp;</li>
+            <li class="lavData">
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li class="lavType">
+                <span>&nbsp;</span>
+                <span style="border: 0px solid;">&nbsp;</span>
+            </li>
+            <li style="flex:0.8;">&nbsp;</li>
+        </ul>
+        <% } %>
+
+    </div>
+</body>
+<script>
+    function winClose() {
+        window.close()
+    }
+</script>
+
+</html>

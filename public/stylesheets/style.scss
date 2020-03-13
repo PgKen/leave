@@ -733,6 +733,9 @@ body {
                     border-left: 1px solid #CCC;
                     display: flex;
                     justify-content: center;
+                    //color: red;
+                    text-align: center;
+
 
                     i {
                         color: #0c8011;
@@ -1195,6 +1198,8 @@ body {
             sans-serif;
 
 
+
+
         // color: blue;
         ul {
             border: 1px solid #CCC;
@@ -1209,6 +1214,7 @@ body {
                 display: flex;
                 flex-direction: row;
                 margin: 0 10px 0 10px;
+                align-items: center;
                 border-bottom: 1px solid #CCC;
 
                 span:nth-child(2) {
@@ -1221,7 +1227,16 @@ body {
                     display: flex;
                     justify-content: center;
 
+                    i {
+                        &:hover {
+                            text-shadow: 2px 1px orangered;
+                        }
+                    }
+
+
                 }
+
+
 
                 &:hover {
                     // color: #cfeab0;
@@ -1282,11 +1297,14 @@ body {
                 background-color: red;
                 color: antiquewhite;
                 height: 2px;
+
             }
 
             li.btnClass {
                 margin-top: 12px;
                 border: 0px solid;
+                background-color: white;
+
                 // border: 1px solid blue;
 
                 span {
@@ -1302,6 +1320,14 @@ body {
                             sans-serif;
                         font-family: 'Sarabun',
                             sans-serif;
+                        border: 4px solid orange;
+                        padding: 0 10px 0 10px;
+                        box-shadow: 2px 4px 5px black;
+                        cursor: pointer;
+
+                        &:hover {
+                            box-shadow: 1px 1px 2px black
+                        }
                     }
                 }
 
@@ -1312,6 +1338,57 @@ body {
             }
 
 
+            li.clsTop {
+                span {
+                    i {
+                        color: green;
+                        font-size: 18px;
+
+                        &:hover {
+                            color: red;
+                        }
+                    }
+                }
+
+                &:hover {
+                    background-color: white;
+                }
+            }
+
+            li.headAllDp {
+                //color: red;
+                //padding: 5px;
+                margin-top: 40px;
+
+                span:nth-child(1) {
+                    padding: 5px;
+                    font-size: 20px;
+                    color: white;
+                    // background-color: #131a19;
+                    background-color: #08574b;
+                }
+
+                span {
+                    // color: white;
+                    background-color: white;
+                    border: 0px solid;
+                }
+            }
+
+            li.dataStarf {
+                background-color: #3e4544;
+                color: white;
+                padding: 5px;
+                margin-top: 60px;
+
+                span {
+                    justify-content: center;
+                }
+
+                &:hover {
+                    background-color: #3e4544;
+                }
+            }
         }
 
         ul.frist {
@@ -1319,8 +1396,9 @@ body {
                 font-size: 14px;
             }
 
-            flex: 0.7;
+            flex: 1;
             border: 1px solid #CCC;
+            display: none;
         }
     }
 

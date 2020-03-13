@@ -14,6 +14,7 @@
 </head>
 
 <body>
+    <input type="hidden" name="" id="onpenAll" value="<%=onpenAll%>">
     <div class="boxTopMenu">
         <ul>
             <!-- <li>
@@ -31,8 +32,11 @@
                 <span onclick="fnLeave()">
                     ลากิจ
                 </span>
+
             </li> -->
-            <li style="border: none;"></li>
+            <li style="border: none;" id="boxViewAll">
+                <span onclick="viewAll()">แสดงข้อมูลรวม</span>
+            </li>
             <li style="border: none;"></li>
             <li style="border: none;"></li>
             <li style="border: none;"></li>
@@ -55,11 +59,13 @@
             <li><%= //arrAllDp[i].namedp%></li>
             <% //} %>
         </ul> -->
-        <ul class="frist">
+        <ul class="frist" id="frist">
             <li>
                 <a name="link"></a>
                 <span style="flex: 0.3;">id</span>
                 <span style="flex:2;">ชื่อ</span>
+                <span style="flex: 0.3;">&nbsp;
+                </span>
                 <span>รวมลาป่วย</span>
                 <span>รวมลากิจ</span>
                 <span>รวมขาดงาน</span>
@@ -69,17 +75,40 @@
             <% for(let l = 0; l < mAllStarf[i].length; l++){%>
 
             <% if(l == 0) { %>
-            <li class="headDp"><%= mAllStarf[i][l].namedp%></li>
+            <li class="headDp" onclick="showDp(<%=mAllStarf[i][0].id_dp%>)"><%= mAllStarf[i][l].namedp%>
+                <i class="material-icons" style="color:yellowgreen;">
+                    assignment
+                </i>
+            </li>
             <% } %>
-            <li>
-                <span style="flex:0.3;"><%= mAllStarf[i][l].id%></span>
+            <li onclick="showStarf(<%= mAllStarf[i][l].id%>)">
+                <span style="flex:0.3; color:#CCC;"><%= mAllStarf[i][l].id%></span>
                 <span style="flex:2;"><%= mAllStarf[i][l].name%></span>
+                <span style="flex: 0.3;" onclick="showGreen(<%= mAllStarf[i][l].id %>)">
+                    <i class="material-icons" style="color: green;">
+                        account_circle
+                    </i>
+                </span>
                 <span><%= dataLeave[li].totalSick%></span>
                 <span><%= dataLeave[li].totalLeave%></span>
                 <span><%= dataLeave[li].totalCut%></span>
             </li>
             <% li = li + 1 %>
             <% } %>
+            <li class="clsTop">
+                <span style="flex: 0.3;"></span>
+                <span style="flex:2;"></span>
+                <span></span>
+                <span></span>
+                <span class="clsTop">
+                    <a href="#link">
+                        <i class="material-icons">
+                            vertical_align_top
+                        </i>
+                    </a>
+                </span>
+
+            </li>
             <% } %>
             <%//= li %>
             <li>
@@ -89,17 +118,21 @@
         <!-- <ul style="display: none;"> -->
 
         <ul>
-            <form action="/approv_3" method="post">
+            <form action="/approv_3" method="post" onsubmit="return approveAllCeo()">
 
                 <li style="margin: 0 10px 0 10px;">
                     <span style="flex: 0.3;">id</span>
-                    <span>ชื่อ</span>
+                    <span>แผนก</span>
+                    <span style="flex: 0.3;">&nbsp;
+                    </span>
+                    <span style="flex: 1.1;">ชื่อ</span>
+                    <span style="flex: 0.3;">&nbsp;</span>
                     <span>วันเริ่มลา</span>
                     <span>สิ้นสุดวันลา</span>
-                    <span>รวมลาป่วย</span>
-                    <span>รวมลากิจ</span>
-                    <span>รวมขาดงาน</span>
-                    <span>สาเหตุ</span>
+                    <span style="flex: 0.6;">ลาป่วย</span>
+                    <span style="flex:0.6;">ลากิจ</span>
+                    <span style="flex:0.6;">ขาดงาน</span>
+                    <span style="flex: 1.1;"> สาเหตุ</span>
                     <span style="flex: 0.3;">
                         <i class="material-icons" style="color:greenyellow;">
                             done
@@ -112,43 +145,69 @@
                     </span>
                 </li>
                 <% for(let m = 0; m < datatotalLeave.length; m++) { %>
-
                 <% for(let n = 0; n < mindexStarfLeave[m].length; n++) { %>
-
 
                 <li>
                     <input type="hidden" name="getId" value="<%= mindexStarfLeave[m][n].id %>">
                     <span style="flex: 0.3;"><%= mindexStarfLeave[m][n].id %></span>
+                    <%= //mindexStarfLeave[m][n].myId %>
 
                     <% if(n == 0){ %>
-                    <span><%= allStarfLeave[m][0].name %>&nbsp;&nbsp;<%= allStarfLeave[m][0].surname %></span>
+                    <span style="background-color:#009688;font-size: 12px;align-items:
+                        center;"><%=allStarfLeave[m][0].namedp%><%=allStarfLeave[m][0].id_dp%>
+                    </span>
+                    <span style="flex: 0.3;" onclick="showDp(<%=allStarfLeave[m][0].id_dp%>)">
+                        <i class="material-icons" style="color: #009688;">
+                            assignment
+                        </i>
+                    </span>
                     <% }else{ %>
                     <span>&nbsp;</span>
+                    <span style="flex: 0.3;">&nbsp;</span>
+                    <% } %>
+
+                    <% if(n == 0){ %>
+                    <span style="flex: 1.1;justify-content:flex-start;">
+                        <%= allStarfLeave[m][0].name %>&nbsp;&nbsp;<%= allStarfLeave[m][0].surname %>
+                        &nbsp;&nbsp;<%= //allStarfLeave[m][0].id_user %>
+
+                    </span>
+                    <span onclick="showStarf(
+                        <%= mindexStarfLeave[m][n].myId %>)" style="flex: 0.3;">
+                        <i class="material-icons" style="color: #2196F3;">
+                            assignment_ind
+                        </i>
+                    </span>
+                    <% }else{ %>
+                    <span style="flex: 1.1;">&nbsp;</span>
+                    <span style="flex: 0.3;">&nbsp;</span>
                     <% } %>
                     <span style="justify-content: center;"><%= mindexStarfLeave[m][n].dateStart %></span>
                     <span><%= mindexStarfLeave[m][n].dateEnd %></span>
 
                     <% if(mindexStarfLeave[m][n].typel < 10) { %>
-                    <span><%= mindexStarfLeave[m][n].unitDate %></span>
-                    <span>-</span>
-                    <span>-</span>
+                    <span style="flex: 0.6;"><%= mindexStarfLeave[m][n].unitDate %></span>
+                    <span style="flex: 0.6;">-</span>
+                    <span style="flex: 0.6;">-</span>
                     <% }else if(mindexStarfLeave[m][n].typel == 10){  %>
-                    <span>-</span>
-                    <span><%= mindexStarfLeave[m][n].unitDate %></span>
-                    <span>-</span>
+                    <span style="flex: 0.6;">-</span>
+                    <span style="flex: 0.6;"><%= mindexStarfLeave[m][n].unitDate %></span>
+                    <span style="flex: 0.6;">-</span>
                     <% }else if(mindexStarfLeave[m][n].typel == 20){ %>
-                    <span>-</span>
-                    <span>-</span>
-                    <span><%= mindexStarfLeave[m][n].unitDate %></span>
+                    <span style="flex: 0.6;">-</span>
+                    <span style="flex: 0.6;">-</span>
+                    <span style="flex: 0.6;"><%= mindexStarfLeave[m][n].unitDate %></span>
                     <% }%>
-                    <span><%= mindexStarfLeave[m][n].cause%></span>
+                    <span style="flex: 1.1;"><%= mindexStarfLeave[m][n].cause%></span>
                     <span style="flex: 0.3;">
-                        <i class="material-icons" style="color:green;" onclick="updateStatus_3()">
+                        <i class="material-icons" style="color:green;"
+                            onclick="updateStatus_3(<%= mindexStarfLeave[m][n].id %>,<%= allStarfLeave[m][0].id_user %>)">
                             check_circle
                         </i>
                     </span>
                     <span style="flex: 0.3;">
-                        <i class="material-icons" style="color:red;" onclick="updateStatus_3_cut()">
+                        <i class="material-icons" style="color:red;"
+                            onclick="updateStatus_3_cut(<%= mindexStarfLeave[m][n].id %>,<%= allStarfLeave[m][0].id_user %>)">
                             cancel
                         </i>
                     </span>
@@ -164,7 +223,7 @@
                 <span>&nbsp;</span> -->
                 </li>
                 <% } %>
-                <li style="margin: 0 10px 0 10px;">
+                <!-- <li style="margin: 0 10px 0 10px;">
                     <span style="flex: 0.3;">&nbsp;</span>
                     <span>&nbsp;</span>
                     <span>&nbsp;</span>
@@ -179,7 +238,7 @@
                     <span style="flex: 0.3;">
                         &nbsp;
                     </span>
-                </li>
+                </li> -->
                 <% if(datatotalLeave.length == 0){ %>
                 <li class="btnClass" style="margin-top: 40px;">
                     <span>ไม่มีผู้ขอลา</span>
@@ -203,19 +262,159 @@
                 </li>
                 <% } %>
             </form>
+
+            <li class="dataStarf">
+                <span style="flex: 0.3;">id</span>
+                <span>ชื่อ-นามสกุล</span>
+                <span style="flex: 0.3;">ดูใบลา</span>
+                <span>รวมลาป่วย</span>
+                <span>รวมลากิจ</span>
+                <span>รวมขาดงาน</span>
+            </li>
+            <li>
+                <span style="flex: 0.3;">
+                    <%= detailIndex[0].id_user %>
+                </span>
+                <span>
+                    <%= detailIndex[0].name %>&nbsp;&nbsp;&nbsp;<%= detailIndex[0].surname %>
+                </span>
+                <span style="flex: 0.3;" onclick="showGreen(<%= detailIndex[0].id_user %>)">
+                    <i class="material-icons" style="color: green;">
+                        account_circle
+                    </i>
+                </span>
+                <span><%= detalTotalLeaveStarf.totalSick%></span>
+                <span><%= detalTotalLeaveStarf.totalLeave%></span>
+                <span><%= detalTotalLeaveStarf.totalCut%></span>
+            </li>
+            <% if(arrNameInDp.length > 0){ %>
+            <li class="headAllDp">
+                <span>
+                    แผนก&nbsp;&nbsp;<%=arrNameInDp[0][0].namedp%>
+                </span>
+                <span>&nbsp;</span>
+                <span>&nbsp;</span>
+            </li>
+            <li class="dataStarf" style="margin-top: 0;">
+                <span style="flex: 0.3;">id</span>
+                <span>ชื่อ-นามสกุล</span>
+                <span style="flex: 0.3;">&nbsp;</span>
+                <span>รวมลาป่วย</span>
+                <span>รวมลากิจ</span>
+                <span>รวมขาดงาน</span>
+            </li>
+
+            <% for(let i = 0; i < arrNameInDp.length; i++){ %>
+            <li>
+                <span style="flex: 0.3; color:#CCC;">
+                    <%=arrNameInDp[i][0].id_user%>
+                </span>
+                <span><%= arrNameInDp[i][0].name %>&nbsp;&nbsp;&nbsp;<%= arrNameInDp[i][0].surname %></span>
+                <span style="flex: 0.3;">
+                    <i onclick="showGreen(<%=arrNameInDp[i][0].id_user%>)" class="material-icons" style="color: green;">
+                        account_circle
+                    </i>
+                </span>
+                <span><%= mapArrDetailAllDp[i].totalSickDp%></span>
+                <span><%= mapArrDetailAllDp[i].totalLeaveDp%></span>
+                <span><%= mapArrDetailAllDp[i].totalCutDp%></span>
+            </li>
+            <% } %>
+            <% } %>
+
         </ul>
 
     </div>
 
+
 </body>
 
 <script>
-    function updateStatus_3() {
-        console.log("3")
+    $(document).ready(function () {
+        loadFirst()
+    });
+
+    function loadFirst() {
+        let getOpen = document.getElementById('onpenAll').value
+        if (getOpen == 1) {
+            let txt = "<span onclick='notViewAll()'>ซ่อนข้อมูล</span>"
+            document.getElementById('frist').style.display = "flex"
+            document.getElementById('boxViewAll').innerHTML = txt
+        } else {
+            let txt = "<span onclick='viewAll()'>แสดงข้อมูลรวม</span>"
+            document.getElementById('frist').style.display = "none"
+            document.getElementById('boxViewAll').innerHTML = txt
+        }
     }
 
-    function updateStatus_3_cut() {
-        console.log("cut")
+    function updateStatus_3(id, idUser) {
+        let getOpen = document.getElementById('onpenAll').value
+
+        console.log("3 = " + id)
+        location.href = '/updateAppCeo/' + id + "/" + idUser + "/" + getOpen
+    }
+
+    function updateStatus_3_cut(id, idUser) {
+        console.log("cut = " + id)
+        let getOpen = document.getElementById('onpenAll').value
+
+        if (!confirm("ไม่อนุมัติ !!")) {
+            return false;
+        } else {
+            location.href = '/updateCutCeo/' + id + "/" + idUser + "/" + getOpen
+        }
+    }
+
+    function approveAllCeo() {
+        if (!confirm("ต้องการอนุมัติทั้งหมด !!")) {
+            return false;
+        }
+        this.form.submit();
+    }
+
+    function viewAll() {
+        //viewTxt = 1
+        /*let txt = "<span onclick='notViewAll()'>ซ่อนข้อมูล</span>"
+        document.getElementById('frist').style.display = "flex"
+        document.getElementById('boxViewAll').innerHTML = txt*/
+        let getOpen = document.getElementById('onpenAll').value
+        if (getOpen == 0) {
+            getOpen = 1
+        } else {
+            getOpen = 0
+        }
+        console.log("getOpen = " + getOpen)
+
+        location.href = "/ceo/0/" + getOpen + "/0"
+
+    }
+
+    function notViewAll() {
+        //viewTxt = 0
+        /*let txt = "<span onclick='viewAll()'>แสดงข้อมูลรวม</span>"
+        document.getElementById('frist').style.display = "none"
+        document.getElementById('boxViewAll').innerHTML = txt*/
+
+        location.href = "/ceo/0/0/0"
+    }
+
+    function showStarf(idUser) {
+        let getOpen = document.getElementById('onpenAll').value
+
+        console.log("idUser = " + idUser)
+        location.href = "/ceo/" + idUser + "/" + getOpen + "/0"
+    }
+
+    function showGreen(idUser) {
+        //window.location.href = "
+        window.open("/showDetailLeave/" + idUser);
+
+    }
+
+    function showDp(idDp) {
+        let getOpen = document.getElementById('onpenAll').value
+        location.href = "/ceo/0/" + getOpen + "/" + idDp
+
     }
 </script>
 

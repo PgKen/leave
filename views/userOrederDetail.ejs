@@ -38,7 +38,7 @@
                     ลากิจ
                 </span>
             </li>
-            <li style="border: none;">TEST</li>
+            <li></li>
             <li></li>
             <li></li>
             <li></li>
@@ -138,7 +138,7 @@
     <div class="boxListUnderUser">
         <%//= dataAllUser %>
         <%//= title %>
-        <ul id="listUserAll">
+        <ul id="listUserAll" style="flex: 0.5;">
 
 
             <li style="background-color: #7c600d;color: white;">
@@ -150,12 +150,12 @@
                 <span style="flex: 0.3;">&nbsp;</span>
             </li>
             <li>
-                <span style="flex: 0.5;"><%=meData[0].id_user%><%//=(i+1)%></span>
+                <span style="flex: 0.5;"><%//=meData[0].id_user%><%//=(i+1)%></span>
                 <span
                     style="flex:2.3; justify-content: flex-start;"><%=meData[0].name%>&nbsp;&nbsp;<%=meData[0].surname%></span>
                 <span><%=meSickData[0].totalUnitDate %></span>
                 <span><%=meLeaveData[0].totalUnitDate %></span>
-                <span><%=arrLeaveMeCut[0].totalUnitDate%></span>
+                <span><%=mLeaveLeaveListCut[0].totalUnitDate%></span>
                 <span style="flex: 0.3;">
                     <i class="material-icons" onclick="showDetailUser(<%=meData[0].id_user%>)">
                         assignment
@@ -176,7 +176,7 @@
             </li>
             <% for(let i=0; i< mDataAllUser.length; i++) {%>
             <li>
-                <span style="flex: 0.5;"><%=mDataAllUser[i].id_user%><%//=(i+1)%></span>
+                <span style="flex: 0.5;"><%//=mDataAllUser[i].id_user%><%=(i+1)%></span>
                 <input type="hidden" name="getIdUser" value="<%=mDataAllUser[i].id_user%>">
                 <span style="flex:2.3; justify-content: flex-start;"><%=mDataAllUser[i].name%></span>
                 <span><%=mDataTotalSick[i].totalUnitDateSick%></span>
@@ -196,9 +196,12 @@
                 <li style="background-color: #046e64;color:white;"><label>รายชื่อผู้ขอลา</label></li>
                 <li style="background-color: #07ae9e;color: white;">
                     <span style="flex: 0.5;">ลำดับ</span>
-                    <span style="flex: 2.3;">ชื่อ-นามสกุล</span>
-                    <span>ลาป่วย</span>
-                    <span>ลากิจ</span>
+                    <span style="flex: 1;">ชื่อ-นามสกุล</span>
+                    <span>วันเริ่มลา</span>
+                    <span>สิ้นสุดวันลา</span>
+                    <span style="flex: 0.5;">ลาป่วย</span>
+                    <span style="flex: 0.5;">ลากิจ</span>
+                    <span style="flex: 1.2;">สาเหตุ</span>
                     <span style="flex: 0.3; ">
                         <i class="material-icons" style="color:greenyellow;">
                             done
@@ -210,20 +213,35 @@
                         </i>
                     </span>
                 </li>
+
                 <% for(li =0; li < mDataUserLeave.length; li++){ %>
                 <li>
-                    <span style="flex: 0.5;"><%=mDetailLeave[li].id%><%//=(i+1)%></span>
+                    <span style="flex: 0.5;"><%=//mDetailLeave[li].id%><%=(li+1)%></span>
                     <input type="hidden" name="getIdLeave" id="" value="<%=mDetailLeave[li].id%>">
                     <input type="hidden" name="getIdUser" id="" value="<%=mDataUserLeave[li].idUser%>">
                     <span onclick="showDetailUser(<%=mDataUserLeave[li].idUser%>)"
-                        style="flex:2.3; justify-content: flex-start;"><%=mDataUserLeave[li].name%></span>
+                        style="flex:1; justify-content: flex-start;"><%=mDataUserLeave[li].name%>
+                    </span>
+                    <span>
+                        <%=mDetailLeave[li].dateStart%>
+                    </span>
+                    <span>
+                        <%=mDetailLeave[li].dateEnd%>
+                    </span>
                     <% if(mDetailLeave[li].indexType < 10){ %>
-                    <span><%=mDetailLeave[li].unitDate%></span>
-                    <span></span>
+                    <span style="flex: 0.5;"><%=mDetailLeave[li].unitDate%></span>
+                    <span style="flex: 0.5;"></span>
                     <% }else if(mDetailLeave[li].indexType == 10){ %>
-                    <span></span>
-                    <span><%=mDetailLeave[li].unitDate%></span>
+                    <span style="flex: 0.5;"></span>
+                    <span style="flex: 0.5;"><%=mDetailLeave[li].unitDate%></span>
                     <% } %>
+
+                    <!-- สาเหตุ -->
+                    <span style="flex: 1.2; font-size: 14px;">
+                        <%=mDetailLeave[li].cause%>
+                    </span>
+                    <!-- end สาเหตุ -->
+
                     <span style="flex: 0.3;">
                         <i class="material-icons" style="color:green;"
                             onclick="approveIndex(<%=mDetailLeave[li].id%>,<%=mDataUserLeave[li].idUser%>)">
@@ -431,7 +449,7 @@
         <% for(let i = 0; i < dataListLeave.length; i++){ %>
         <ul class="tblData">
             <input type="hidden" name="leaveId" id="" value="<%=dataListLeave[i].myId%>">
-            <li style="flex:0.3;"><%//=(i+1)%>id:<%=dataListLeave[i].leaveId%></li>
+            <li style="flex:0.3;"><%=(i+1)%><%//=dataListLeave[i].leaveId%></li>
             <li style="flex:0.5;"><%=dataListLeave[i].dateCreate%></li>
             <li class="lavType">
                 <span><%=dataListLeave[i].unitDate%></span>
@@ -461,23 +479,25 @@
                 <span style="border: 0px solid;"><%=dataListLeave[i].totalCut%></span>
             </li>
             <li class="lavType">
-                <% if(dataListLeave[i].status == 0){ %>
-                <span style=" border-left: 0px solid;"><%=dataUser.nickname%></span>
+                <% if(dataListLeave[i].status == 1){ %>
+                <!-- <span style=" border-left: 0px solid;"> -->
+                <%=//dataUser.nickname%>
+                <!-- </span> -->
                 <span style=" border-right: 0px solid;">
-                    <i class="material-icons" style="color:red;">
+                    <i class="material-icons" style="color:red;"
+                        onclick="deleteLeaveForOrder(<%=dataListLeave[i].leaveId%>,<%=dataListLeave[0].myId%>)">
                         clear
                     </i>
                 </span>
                 <% } %>
                 <% if(dataListLeave[i].status == 3){ %>
                 <span><%=dataUser.nickname%></span>
-                <span style="border-right: 0px solid;"><%=dataOrder1.name%></span>
+                <span style=" border-right: 0px solid;"><%=dataOrder1.name%></span>
 
                 <% }else if(dataListLeave[i].status == 1){ %>
                 <span style=" border: 0px solid;">
-                    <span><%=dataUser.nickname%></span>
-                    <span style="border-right: 0px solid;"><%=dataOrder1.name%></span>
-
+                    <span><%=//dataUser.nickname%></span>
+                    <span style="border-right: 0px solid;"><%=//dataOrder1.name%></span>
                     <% } %>
             </li>
             <li class="lavType">

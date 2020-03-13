@@ -22,9 +22,13 @@
 
     <div class="boxTopMenu">
         <ul>
-            <li>
-                manager/id
-            </li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
             <li onclick="logout()">
                 <i class="material-icons">
                     exit_to_app
@@ -39,7 +43,6 @@
         <ul>
             <li style="background-color: #574205;color:white;"><label>รายชื่อผู้ใตับังคับบัญชา</label></li>
             <li style="background-color: #7c600d;color: white;">
-
                 <span style="flex: 0.5;">ลำดับ</span>
                 <span style="flex: 2.3;">ชื่อ-นามสกุล</span>
                 <span>รวมลาป่วย</span>
@@ -50,8 +53,8 @@
             <% let namedp = "" %>
             <% for(let i = 0; i < dataStarf.length; i++){ %>
             <li>
-                <span style="flex: 0.5;"><%= dataStarf[i].idUser %></span>
-                <span style="flex: 2.3;"><%= dataStarf[i].name %></span>
+                <span style="flex: 0.5;color:#CCC;"><%//=(i+1)%><%= dataStarf[i].idUser %></span>
+                <span style="flex: 2.3;justify-content: flex-start;"><%= dataStarf[i].name %></span>
                 <span><%= dataLeaveTotal[i].unitSick %></span>
                 <span><%= dataLeaveTotal[i].unitLeave %></span>
                 <span><%= dataLeaveTotal[i].unitAbs %></span>
@@ -64,37 +67,81 @@
 
             <% } %>
         </ul>
-        <ul id="listUserLeave" class="listUserLeave">
+        <ul id="listUserLeave" class="listUserLeave" style="flex: 2;">
             <form action="/approveAllForManager" method="post" onsubmit="return approveAllForManager()">
                 <li style="background-color: #046e64;color:white;"><label>รายชื่อผู้ขอลา</label></li>
                 <li style="background-color: #07ae9e;color: white;">
                     <span style="flex: 0.5;">ลำดับ</span>
-                    <span style="flex: 2.3;">ชื่อ-นามสกุล</span>
-                    <span>ลาป่วย</span>
-                    <span>ลากิจ</span>
-                    <span>ขาดงาน</span>
+                    <span style="flex: 1.2;">ชื่อ-นามสกุล</span>
+                    <span>วันเริ่มลา</span>
+                    <span>สิ้นสุดวันลา</span>
+                    <span style="flex: 0.5;">ลาป่วย</span>
+                    <span style="flex: 0.5;">ลากิจ</span>
+                    <span style="flex: 0.5;">ขาดงาน</span>
+                    <span style="flex: 1.2;">สาเหตุ</span>
+                    <span style="flex: 0.3;">&nbsp;</span>
                     <span style="flex: 0.3;">&nbsp;</span>
                 </li>
                 <% for(i =0; i < dataStarfLeave.length; i++){ %>
-                <li>
+
+                <li style="border-top: 1px solid red;">
+                    <input name="idUser" type="hidden" value="<%= dataStarfLeaveName[i][0].id_user %>">
                     <span style="flex: 0.5;">
                         <i class="material-icons" onclick="showDetailUser(<%= dataStarfLeaveName[i][0].id_user %>)"
                             style="color:#0c8011;">
                             assignment
                         </i>
                     </span>
-                    <span
-                        style="flex:
-                        2.3;"><%= dataStarfLeaveName[i][0].name %>&nbsp;&nbsp;<%= dataStarfLeaveName[i][0].surname %></span>
-                    <span><%= mapTotalLeave[i].sick %></span>
-                    <span><%= mapTotalLeave[i].leave %></span>
-                    <span><%= mapTotalLeave[i].lcut %></span>
+                    <span style="flex:
+                        2.2; background-color: #FFC107;">
+                        <%= dataStarfLeaveName[i][0].name %>&nbsp;&nbsp;<%= dataStarfLeaveName[i][0].surname %></span>
+                    <span></span>
+                    <span style="flex: 0.5;"></span>
+                    <span style="flex: 0.5;"></span>
+                    <span style="flex: 0.5;"></span>
+                    <span style="flex: 1.2;"></span>
+                    <span style="flex: 0.3;"></span>
+                    <span style="flex: 0.3;"></span>
+                    <% for(let x =0; x < dataArrAllLeave[i].length; x++){ %>
+                <li>
+                    <input name="idData" type="hidden" value="<%= dataArrAllLeave[i][x].idData%>">
+                    <span style="flex: 0.5;"><%=(x+1)%><%= //dataArrAllLeave[i][x].idData%></span>
+                    <span style="flex: 1.2;"></span>
+                    <span><%=dataArrAllLeaveDate[i][x].startDate%></span>
+                    <span><%=dataArrAllLeaveDate[i][x].startEnd%></span>
+
+                    <% if(dataArrAllLeave[i][x].type_l < 10){ %>
+                    <span style="flex: 0.5;"><%= dataArrAllLeave[i][x].unit_date %></span>
+                    <span style="flex: 0.5;">&nbsp;</span>
+                    <span style="flex: 0.5;">&nbsp;</span>
+                    <% }else if(dataArrAllLeave[i][x].type_l == 10){ %>
+                    <span style="flex: 0.5;">&nbsp;</span>
+                    <span style="flex: 0.5;"><%= dataArrAllLeave[i][x].unit_date %></span>
+                    <span style="flex: 0.5;">&nbsp;</span>
+                    <% }else if(dataArrAllLeave[i][x].type_l == 20){ %>
+                    <span style="flex: 0.5;">&nbsp;</span>
+                    <span style="flex: 0.5;">&nbsp;</span>
+                    <span style="flex: 0.5;"><%= dataArrAllLeave[i][x].unit_date %></span>
+                    <% } %>
+                    <span style="flex: 1.2;"><%=dataArrAllLeave[i][x].cause%></span>
+
 
                     <span style="flex: 0.3;">
-                        <i class="material-icons" onclick="approveIndex(<%= dataStarfLeaveName[i][0].id_user %>)">
-                            event_available
+                        <i class="material-icons" style="color:green;"
+                            onclick="approveIndex(<%= dataArrAllLeave[i][x].idData %>,<%=dataArrAllLeave[i][x].myId%>)">
+                            check_circle
                         </i>
                     </span>
+                    <span style="flex: 0.3;">
+                        <i class="material-icons" style="color:red;"
+                            onclick="notApproveIndex(<%= dataArrAllLeave[i][x].idData %>,<%=dataArrAllLeave[i][x].myId%>)">
+                            cancel
+                        </i>
+                    </span>
+                </li>
+                <% } %>
+
+
                 </li>
                 <% } %>
                 <% if(dataStarfLeave.length != 0){ %>
@@ -104,6 +151,9 @@
             </form>
         </ul>
     </div>
+    <%//= detailStarf %>
+    <% if(detailStarf == ""){ %>
+    <% }else{ %>
     <div class="boxleave">
         <ul class="headComp">
             <li>
@@ -276,7 +326,6 @@
                     <li>ผู้ปฏิบัติงานแทน</li>
                 </ul>
             </li>
-
         </ul>
         <% let beforTotalSick = 0 %>
         <% let totalSick = 0 %>
@@ -286,7 +335,7 @@
         <% for(let i = 0; i < detailLeave.length; i++){ %>
         <ul class="tblData">
             <input type="hidden" name="leaveId" id="" value="">
-            <li style="flex:0.3;"><%=detailLeave[i].id%></li>
+            <li style="flex:0.3;"><%=(i+1)%><%//=detailLeave[i].id%></li>
             <li style="flex:0.5;"><%= detailLeave[i].dateCreate %></li>
             <li class="lavType">
                 <% if(detailLeave[i].typeL < 10){ %>
@@ -335,7 +384,7 @@
                 <% if(detailLeave[i].status == 1){ %>
                 <span>
                     <i class="material-icons" style="color:red;">
-                        clear
+                        <!-- clear -->
                     </i>
                 </span>
                 <span style="border: 0px solid;">&nbsp;</span>
@@ -387,6 +436,7 @@
         </ul>
         <% } %>
     </div>
+    <% } %>
     <!-- End ใช้งาน -->
 
     <script>
@@ -395,9 +445,14 @@
             location.href = "/manager/" + i
         }
 
-        function approveIndex(i) {
+        function approveIndex(i, idUser) {
             console.log("i = " + i)
-            location.href = "/approveUpdateIndex/" + i
+            location.href = "/approveUpdateIndex/" + i + "/" + idUser
+        }
+
+        function notApproveIndex(i, idUser) {
+            console.log("i = " + i)
+            location.href = "/notApproveUpdateIndex/" + i + "/" + idUser
         }
     </script>
 

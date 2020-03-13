@@ -432,7 +432,8 @@ body {
           border-bottom: 1px solid #CCC;
           border-left: 1px solid #CCC;
           display: flex;
-          justify-content: center; }
+          justify-content: center;
+          text-align: center; }
           body .boxListUnderUser ul li span i {
             color: #0c8011;
             font-size: 26px;
@@ -731,6 +732,7 @@ body {
         display: flex;
         flex-direction: row;
         margin: 0 10px 0 10px;
+        align-items: center;
         border-bottom: 1px solid #CCC; }
         body .boxCeoData ul li span:nth-child(2) {
           justify-content: flex-start; }
@@ -739,6 +741,8 @@ body {
           border-left: 1px solid #CCC;
           display: flex;
           justify-content: center; }
+          body .boxCeoData ul li span i:hover {
+            text-shadow: 2px 1px orangered; }
         body .boxCeoData ul li:hover {
           background-color: #FF9800; }
         body .boxCeoData ul li i {
@@ -773,7 +777,8 @@ body {
         height: 2px; }
       body .boxCeoData ul li.btnClass {
         margin-top: 12px;
-        border: 0px solid; }
+        border: 0px solid;
+        background-color: white; }
         body .boxCeoData ul li.btnClass span {
           border: 0px solid;
           font-size: 36px;
@@ -782,12 +787,45 @@ body {
             font-size: 18px;
             font-family: 'Chonburi', cursive;
             font-family: 'Prompt', sans-serif;
-            font-family: 'Sarabun', sans-serif; }
+            font-family: 'Sarabun', sans-serif;
+            border: 4px solid orange;
+            padding: 0 10px 0 10px;
+            box-shadow: 2px 4px 5px black;
+            cursor: pointer; }
+            body .boxCeoData ul li.btnClass span button:hover {
+              box-shadow: 1px 1px 2px black; }
         body .boxCeoData ul li.btnClass:hover {
           background-color: white; }
+      body .boxCeoData ul li.clsTop span i {
+        color: green;
+        font-size: 18px; }
+        body .boxCeoData ul li.clsTop span i:hover {
+          color: red; }
+      body .boxCeoData ul li.clsTop:hover {
+        background-color: white; }
+      body .boxCeoData ul li.headAllDp {
+        margin-top: 40px; }
+        body .boxCeoData ul li.headAllDp span:nth-child(1) {
+          padding: 5px;
+          font-size: 20px;
+          color: white;
+          background-color: #08574b; }
+        body .boxCeoData ul li.headAllDp span {
+          background-color: white;
+          border: 0px solid; }
+      body .boxCeoData ul li.dataStarf {
+        background-color: #3e4544;
+        color: white;
+        padding: 5px;
+        margin-top: 60px; }
+        body .boxCeoData ul li.dataStarf span {
+          justify-content: center; }
+        body .boxCeoData ul li.dataStarf:hover {
+          background-color: #3e4544; }
     body .boxCeoData ul.frist {
-      flex: 0.7;
-      border: 1px solid #CCC; }
+      flex: 1;
+      border: 1px solid #CCC;
+      display: none; }
       body .boxCeoData ul.frist li:nth-child(1) {
         font-size: 14px; }
 
